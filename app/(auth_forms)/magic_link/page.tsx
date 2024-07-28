@@ -10,17 +10,15 @@ import { handleRequest } from '@/utils/auth-helpers/client';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-interface EmailSignInProps {
-  allowPassword: boolean;
-  redirectMethod: string;
-  disableButton?: boolean;
-}
-
 export default function EmailSignIn({
   allowPassword = true,
   redirectMethod = 'client',
   disableButton = false
-}: EmailSignInProps) {
+}: {
+  allowPassword?: boolean;
+  redirectMethod?: string;
+  disableButton?: boolean;
+}) {
   const router = redirectMethod === 'client' ? useRouter() : null;
   const [isSubmitting, setIsSubmitting] = useState(false);
 
