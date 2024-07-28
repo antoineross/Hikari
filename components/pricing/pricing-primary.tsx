@@ -1,5 +1,4 @@
 import { createClient } from '@/utils/supabase/server';
-import Pricing from '@/components/supa-ui/Pricing/Pricing';
 import {
   getProducts,
   getSubscription,

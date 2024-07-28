@@ -10,7 +10,7 @@ import { CoolMode } from "@/components/magicui/cool-mode";
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
 
-const AnimatedUnderline = ({ children, href, className }) => (
+const AnimatedUnderline = ({ children, href, className }: { children: React.ReactNode; href: string; className?: string }) => (
   <a 
     href={href} 
     className={`${className} relative overflow-hidden group`}
