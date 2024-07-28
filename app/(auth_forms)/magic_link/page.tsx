@@ -17,9 +17,9 @@ interface EmailSignInProps {
 }
 
 export default function EmailSignIn({
-  allowPassword,
-  redirectMethod,
-  disableButton
+  allowPassword = true,
+  redirectMethod = 'client',
+  disableButton = false
 }: EmailSignInProps) {
   const router = redirectMethod === 'client' ? useRouter() : null;
   const [isSubmitting, setIsSubmitting] = useState(false);
