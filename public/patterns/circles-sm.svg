@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="8" height="8" viewBox="0 0 8 8" xml:space="preserve">
+    <defs>
+        <pattern id="pattern-17" patternUnits="userSpaceOnUse" width="8" height="8">
+    <circle cx="4" cy="4" r="2" style="stroke: var(--pattern-channel-1, currentcolor)" fill="none" />
+</pattern>
+    </defs>
+    <rect x="0" y="0" width="8" height="8" fill="url(#pattern-17)" />
+</svg>

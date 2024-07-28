@@ -1,0 +1,16 @@
+{
+  "title": "Documentation",
+  "root": true,
+  "pages": [
+    "index",
+    "quick-start",
+    "---Configure---",
+    "...configure",
+    "---Components---",
+    "/components/logo-cloud",
+    "/components/features",
+    "/components/testimonials",
+    "/components/faq",
+    "/components/footer"
+  ]
+}

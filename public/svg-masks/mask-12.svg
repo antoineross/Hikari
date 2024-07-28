@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="265px" height="345px" viewBox="0 0 265 345" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>mask-12</title>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <path d="M70,40 L275,40 C291.568542,40 305,53.4314575 305,70 L305,275 C305,291.568542 291.568542,305 275,305 L70,305 C14.771525,305 -40,250.228475 -40,195 L-40,150 C-40,94.771525 14.771525,40 70,40 Z" id="mask-12" fill="#3438AA" transform="translate(132.500000, 172.500000) rotate(-270.000000) translate(-132.500000, -172.500000) "></path>
+    </g>
+</svg>

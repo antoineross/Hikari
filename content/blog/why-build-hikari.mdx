@@ -1,0 +1,76 @@
+---
+title: Why was Hikari built?
+description: I just wanted to scratch an itch.
+date: 2024-07-18
+author: Antoine Ross
+---
+
+## Scratching an Itch
+
+I built Hikari because I wanted to **scratch an itch**.
+
+As a developer, I found myself in need of a robust starter template for numerous SaaS projects I was actively building at the time. Moreover, I wanted a solution that would serve as a solid foundation for my future projects.
+
+This pressing need and forward-thinking approach led me to create a more modern and personalized version of Taxonomy, a comprehensive and customizable solution that could adapt to various SaaS scenarios and evolve with my future requirements.
+
+## The Inspiration
+
+The inspiration for this project is [Taxonomy](https://tx.shadcn.com/), which is a modern starter template for Nextjs.13. Initially, I used Taxonomy as a way to understand Next.js -- I loved how the design was simple and clean.
+After using Taxonomy for a while, I discovered it lacked certain features and the level of customization I desired. For instance:
+
+1. **Documentation**: Contentlayer, which was a crucial component for building a documentation site, was no longer supported in Next.js 14.
+
+2. **Authentication**: Clerk was an easy authentication system, but I preferred Supabase for its flexibility and ease of use. While there was a [Supabase version of Taxonomy](https://taxonomy-supabase.vercel.app/), its authentication logic differed from my preferred implementation.
+
+3. **Database**: I also preferred using Supabase Postgres over Planetscale or Prisma for database management.
+
+I often found myself returning to the [Supabase subscription repository](https://github.com/vercel/nextjs-subscription-payments/tree/main) as a starting point, customizing it to include components from Taxonomy. This repetitive process made me realize the need for a more tailored solution.
+
+## Modern Features and Design Choices
+
+In developing Hikari, I wanted to incorporate more modern features and make design choices that would enhance both functionality and user experience. Here are some key changes and additions:
+
+1. **Documentation Framework**: Replaced Contentlayer with [Fumadocs](https://fumadocs.vercel.app/), a powerful documentation framework. Its design language and flexibility resonated strongly with my vision for Hikari.
+
+2. **Authentication**: Moved away from Clerk in favor of Supabase for authentication. This change offers more flexibility and better integration with other Supabase services.
+
+3. **Modular Component Library**: Developed a comprehensive set of components that can be easily mixed and matched for various website needs. This includes:
+
+   - Landing page components
+   - Documentation components
+   - Blog layout and styling
+   - Dashboard elements
+
+4. **Cohesive Design Language**: Implemented a design system that aligns with my personal aesthetic preferences - simple, clean, and modern. This ensures a consistent look and feel across all parts of the application.
+
+5. **Simplicity and Ease of Use**: Prioritized a user-friendly experience, making it intuitive for both developers using the template and end-users interacting with the final product.
+
+6. **Performance Optimization**: Incorporated best practices for performance, including code splitting, lazy loading, and optimized asset delivery.
+
+7. **Responsive Design**: Ensured that all components and layouts are fully responsive, providing a seamless experience across devices of all sizes.
+
+8. **SEO Friendly**: Implemented SEO best practices, including proper meta tag management and semantic HTML structure.
+
+These features and design choices make Hikari not just a template, but a comprehensive toolkit for building modern, efficient, and user-friendly SaaS applications.
+
+# The Philosophy Behind Hikari
+
+## Open Source and Community
+
+Building Hikari wasn't just about solving my own problems. I'm a firm believer in open source and wanted to give back to the community that has helped me learn and grow. By sharing Hikari, I hope to contribute to the ecosystem and help other developers who might face similar challenges.
+So I'd like to give a special thanks to all the open source projects that I've used to build Hikari.
+
+- [ShadcnUI](https://github.com/shadcn-ui/ui): A collection of accessible UI components for building modern web applications.
+- [Taxonomy](https://github.com/shadcn-ui/taxonomy): A modern starter template for Next.js 13.
+- [Fumadocs](https://github.com/fumadocs/fumadocs): A documentation framework for building beautiful documentation sites.
+- [Next.js](https://github.com/vercel/next.js): A React framework for production.
+- [Supabase](https://github.com/vercel/nextjs-subscription-payments): A starter template for Supabase Authentication/Database + Vercel + Stripe.
+- [MagicUI](https://github.com/magicuidesign/magicui): A collection of accessible UI components for designing web applications.
+
+## Looking Forward
+
+Hikari is just the beginning. Over the past six months, I've been studying and working on a variety of projects, each addressing different _"itches"_ I've encountered in my development journey. I'm excited to release these projects in the coming months and share my progress with the community.
+
+If you're interested in following along with these projects or want to see what else I'm working on, feel free to check out my Twitter: [@antoineross\_\_](https://twitter.com/antoineross__).
+
+In the end, Hikari represents not just a tool, but a philosophy: **build what you need, make it flexible, and share it with others**. I hope it serves you as well as it has served me.

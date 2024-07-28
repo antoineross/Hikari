@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300px" height="300px" viewBox="0 0 300 300" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>mask-08</title>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <path d="M150,0 C232.842712,0 300,67.1572875 300,150 C300,232.842712 232.842712,300 150,300 C67.1572875,300 0,232.842712 0,150 C0,67.1572875 67.1572875,0 150,0 Z M151,85 C115.101491,85 86,114.101491 86,150 C86,185.898509 115.101491,215 151,215 C186.898509,215 216,185.898509 216,150 C216,114.101491 186.898509,85 151,85 Z" id="mask-08" fill="#3438AA"></path>
+    </g>
+</svg>

@@ -1,0 +1,104 @@
+---
+title: Local Development
+description: Setting up Stripe Locally
+---
+
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+
+If you don't already have a Stripe account, create one now.
+
+For the following steps, make sure you have the ["Test Mode" toggle](https://stripe.com/docs/testing) switched on.
+
+## Developing Locally
+
+We need to create a webhook in the `Developers` section of Stripe. This webhook is the piece that connects Stripe to your Vercel Serverless Functions.
+
+<div className="steps">
+<div className="step">
+Go to the **API Keys** section on the Developers tab. Copy the `Publishable key` and `Secret key` and paste them into your `.env.local` file as `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` and `STRIPE_SECRET_KEY`
+
+</div>
+
+<div className="step">
+Click the "Test in local environment" button on the [test Endpoints page](https://dashboard.stripe.com/test/webhooks).
+</div>
+<div className="step">
+[Download the CLI](https://docs.stripe.com/stripe-cli) and log in with your Stripe account
+```bash
+stripe login
+```
+</div>
+<div className="step">
+Forward events to your webhook. In our case, the webhook is in the `api/webhooks/stripe` endpoint. 
+    ```bash
+    stripe listen --forward-to http://localhost:3000/api/webhooks/stripe
+    ```
+This will print out the following. Copy the webhook signing secret and paste it to your `.env.local` file as `STRIPE_WEBHOOK_SECRET`: 
+    ```bash
+     Ready! You are using Stripe API Version [2024-06-20]. 
+     Your webhook signing secret is whsec_4838c65cc*********************8
+    ```
+Now that we have our stripe webhook secret, we can trigger the events for our supabase server. For now just copy the the environment variables. We will come back to this later.
+</div>
+<div className="step">
+By now your .env.local file should look like this:
+```bash title=".env.local"
+# Get these from Stripe dashboard
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_test_51PXT**********************************PpPple1"
+STRIPE_SECRET_KEY="sk_test_5********************************************I7h"
+STRIPE_WEBHOOK_SECRET="whsec_483**********************************d2118"
+```
+</div>
+</div>
+
+## Create product and pricing information
+
+Your application's webhook listens for product updates on Stripe and automatically propagates them to your Supabase database. So with your webhook listener running, you can now create your product and pricing information in the [Stripe Dashboard](https://dashboard.stripe.com/test/products).
+
+Before continuing with this portion of the documentation, make sure you have the following environment variables set in your `.env.local` file:
+
+```bash title=".env.local"
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+
+# These environment variables are used for Supabase Local Dev
+NEXT_PUBLIC_SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR************************************WNReilDMblYTn_I0"
+NEXT_PUBLIC_SUPABASE_URL="http://127.0.0.1:54321"
+SUPABASE_SERVICE_ROLE_KEY="eyJhbGciOiJIUzI1Ni******************************************Zx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU"
+
+# Get these from Stripe dashboard
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_test_51PXT**********************************PpPple1"
+STRIPE_SECRET_KEY="sk_test_5********************************************I7h"
+STRIPE_WEBHOOK_SECRET="whsec_483**********************************d2118"
+```
+
+Stripe Checkout currently supports pricing that bills a predefined amount at a specific interval. More complex plans (e.g., different pricing tiers or seats) are not yet supported. For example, you can create business models with different pricing tiers, e.g.:
+
+<div className="border-2 rounded-lg mx-8 px-10">
+  | Product | Monthly Price | Yearly Price |
+  |-------------|----------------|--------------| | Hobby | 10 USD | 100 USD | |
+  Freelancer | 20 USD | 200 USD | | Pro | 40 USD | 400 USD |
+</div>
+
+To speed up the setup, we use a <strong>fixtures file</strong> `utils/stripe/fixtures/stripe-fixtures.json` to bootstrap test product and pricing data in your Stripe account. Edit this file according to your products pricing scheme. The [Stripe CLI](https://stripe.com/docs/stripe-cli#install) `fixtures` command executes a series of API requests defined in this JSON file.
+Simply run `pnpm stripe:fixtures`.
+
+<div className="steps">
+  <div className="step">
+    First go to `utils/stripe/fixtures/stripe-fixtures.json` and edit the file
+    according to your products pricing scheme.
+  </div>
+  <div className="step">
+    If you haven't yet, ensure that you are logged in to the stripe CLI in your
+    terminal. ```bash stripe login ``` Then run the command to have stripe
+    listening to your local environment. **Make sure that you have your webhook
+    secret set in your `.env.local` file**. ```bash stripe listen --forward-to
+    http://localhost:3000/api/webhooks/stripe ```
+  </div>
+  <div className="step">
+    Now that you have your products and pricing scheme set up, run the following
+    command to create the products in your Stripe account: ```bash pnpm
+    stripe:fixtures ```
+  </div>
+</div>
+
+**Important:** Make sure that you've configured your Stripe webhook correctly and redeployed with all needed environment variables.

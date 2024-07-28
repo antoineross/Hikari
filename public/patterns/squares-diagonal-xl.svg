@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="12" height="12" viewBox="0 0 12 12" xml:space="preserve">
+    <defs>
+        <pattern id="pattern-29" patternUnits="userSpaceOnUse" width="12" height="12">
+    <path d="M5,5 l2,0 l0,2 l-2,0 l0,-2 M0,0 l1,0 l0,1 l-1,0 l0,-1 M11,0 l1,0 l0,1 l-1,0 l0,-1 M0,11 l1,0 l0,1 l-1,0 l0,-1 M11,11 l1,0 l0,1 l-1,0 l0,-1" fill="hotpink" style="fill: var(--pattern-channel-1, currentcolor)" />
+</pattern>
+    </defs>
+    <rect x="0" y="0" width="12" height="12" fill="url(#pattern-29)" />
+</svg>

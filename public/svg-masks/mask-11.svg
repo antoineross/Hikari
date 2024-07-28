@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="245px" height="345px" viewBox="0 0 245 345" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>mask-11</title>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <path d="M100,0 L215,0 C231.568542,0 245,13.4314575 245,30 L245,315 C245,331.568542 231.568542,345 215,345 L100,345 C44.771525,345 0,300.228475 0,245 L0,100 C0,44.771525 44.771525,0 100,0 Z" id="mask-11" fill="#3438AA"></path>
+    </g>
+</svg>

@@ -1,0 +1,222 @@
+---
+title: Development in Production for Supabase
+description: Setting up Supabase for Production
+---
+
+## Develop locally
+
+If you haven't already done so, clone your Github repository to your local machine.
+
+### Configure Auth
+
+Follow [this guide](https://supabase.com/docs/guides/auth/social-login/auth-github) to set up an OAuth app with GitHub and configure Supabase to use it as an auth provider.
+
+In your Supabase project, navigate to [auth > URL configuration](https://app.supabase.com/project/_/auth/url-configuration) and set your main production URL (e.g. https://your-deployment-url.vercel.app) as the site url.
+
+Next, in your Vercel deployment settings, add a new **Production** environment variable called `NEXT_PUBLIC_SITE_URL` and set it to the same URL. Make sure to deselect preview and development environments to make sure that preview branches and local development work correctly.
+
+### Install dependencies
+
+Ensure you have [pnpm](https://pnpm.io/installation) installed and run:
+
+```bash
+pnpm install
+```
+
+### Local Development with Supabase
+
+#### Prerequisites
+
+<div className="steps">
+  <div className="step">
+    **Install Docker**: 
+    - Download and install Docker from [here](https://www.docker.com/get-started/).
+  </div>
+  <div className="step">
+    **Setup Environment Files**: 
+    - Copy or rename `.env.local.example` to `.env.local`. 
+    - Copy or rename `.env.example` to `.env`.
+  </div>
+</div>
+
+#### Starting Local Supabase Instance
+
+<div className="steps">
+  <div className="step">
+    **Start Supabase**: 
+    - Open your terminal. 
+    - Run the following command to start a local Supabase instance and set up the database schema: 
+    ```bash 
+    pnpm supabase:start 
+    ``` 
+    - Note the URLs provided in the terminal output for accessing different services within the Supabase stack.
+  </div>
+  <div className="step">
+    **Configure Environment Variables**: 
+    - Copy the value of `service_role_key` from the terminal output. 
+    - Open your `.env.local` file. 
+    - Set `SUPABASE_SERVICE_ROLE_KEY` in your `.env.local` file with the copied value.
+  </div>
+  <div className="step">
+    **Print Supabase URLs**: 
+    - Open your terminal. 
+    - Run the following command to print out the URLs: 
+    ```bash 
+    pnpm supabase:status 
+    ``` 
+    - This will print the following keys that we will use in our environment variables. Copy these values and paste them in your `.env.local` file: 
+    ```bash title=".env.local"
+    API URL: http://127.0.0.1:54321 # NEXT_PUBLIC_SUPABASE_URL 
+    anon key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ******xad # NEXT_PUBLIC_SUPABASE_ANON_KEY 
+    service_role key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9*******sad # SUPABASE_SERVICE_ROLE_KEY 
+    ```
+  </div>
+  <div className="step">
+    **Link Local Supabase Instance to Project**: 
+    - Open your terminal. 
+    - Run the following command: 
+    ```bash 
+    pnpm supabase:link 
+    ``` 
+    - Navigate to the Supabase project you created. 
+    - Enter your database password when prompted.
+  </div>
+</div>
+
+#### Database Password Reset
+
+<div className="steps">
+  <div className="step">
+    **Reset Database Password**: 
+    - Visit your [database settings](https://supabase.com/dashboard/project/_/settings/database). 
+    - Click "Reset database password". 
+    - Copy the new password and store it in a password manager.
+  </div>
+</div>
+
+#### Schema Changes and Data Seeding
+
+<div className="steps">
+  <div className="step">
+    **Pull Schema Changes**: 
+    - Open your terminal. 
+    - Run the following command to pull schema changes from your remote database: 
+    ```bash 
+    pnpm supabase:pull 
+    ```
+  </div>
+  <div className="step">
+    **Seed Local Database**: 
+    - Open your terminal. 
+    - Run the following command to generate seed data: 
+    ```bash 
+    pnpm supabase:generate-seed 
+    pnpm supabase:reset 
+    ```
+  </div>
+</div>
+
+#### Generating Types and Migrations
+
+<div className="steps">
+  <div className="step">
+    **Generate TypeScript Types**: 
+    - Open your terminal. 
+    - Run the following command to generate TypeScript types to match your schema: 
+    ```bash 
+    pnpm supabase:generate-types 
+    ```
+  </div>
+  <div className="step">
+    **Generate Migration File**: 
+    - Open your terminal. 
+    - Run the following command to automatically generate a migration file with all the changes you've made to your local database schema: 
+    ```bash 
+    pnpm supabase:generate-migration 
+    ``` 
+    - Push those changes to your remote database with: 
+    ```bash 
+    pnpm supabase:push 
+    ```
+  </div>
+</div>
+
+### Use the Stripe CLI to Test Webhooks
+
+#### Setting Up Stripe CLI
+
+<div className="steps">
+  <div className="step">
+    **Login to Stripe Account**: 
+    - Use the Stripe CLI to [login to your Stripe account](https://stripe.com/docs/stripe-cli#login-account): 
+    ```bash 
+    pnpm stripe:login 
+    ``` 
+    - This will print a URL to navigate to in your browser and provide access to your Stripe account.
+  </div>
+  <div className="step">
+    **Start Local Webhook Forwarding**: 
+    - Run the following command: 
+    ```bash 
+    pnpm stripe:listen 
+    ``` 
+    - This will print a webhook secret (such as `whsec_***`) to the console. 
+    - Set `STRIPE_WEBHOOK_SECRET` to this value in your `.env.local` file. 
+    - If you haven't already, set `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` and `STRIPE_SECRET_KEY` in your `.env.local` file using the **test mode** keys from your Stripe dashboard.
+  </div>
+</div>
+
+### Final environment variables
+
+By now your environment variables should look like this:
+
+```bash title=".env"
+SUPABASE_AUTH_EXTERNAL_GITHUB_REDIRECT_URI="http://127.0.0.1:54321/auth/v1/callback"
+SUPABASE_AUTH_EXTERNAL_GITHUB_CLIENT_ID="Ov23li********Q"
+SUPABASE_AUTH_EXTERNAL_GITHUB_SECRET="96e4**************************34d"
+```
+
+```bash title=".env.local"
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+
+# These environment variables are used for Supabase Local Dev
+NEXT_PUBLIC_SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR************************************WNReilDMblYTn_I0"
+NEXT_PUBLIC_SUPABASE_URL="http://127.0.0.1:54321"
+SUPABASE_SERVICE_ROLE_KEY="eyJhbGciOiJIUzI1Ni******************************************Zx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU"
+
+# Get these from Stripe dashboard
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_test_51PXT**********************************PpPple1"
+STRIPE_SECRET_KEY="sk_test_5********************************************I7h"
+STRIPE_WEBHOOK_SECRET="whsec_483**********************************d2118"
+
+# Optional just to keep your database safe! :D
+DB_PASSWORD="W23**********s8e"
+```
+
+### Run the Next.js Client
+
+<div className="steps">
+  <div className="step">
+    **Start Development Server**: 
+    - Open a separate terminal. 
+    - Run the following command to start the development server: 
+    ```bash 
+    pnpm dev 
+    ``` 
+    - Note that webhook forwarding and the development server must be running concurrently in two separate terminals for the application to work correctly.
+  </div>
+  <div className="step">
+    **View Application**: 
+    - Navigate to [http://localhost:3000](http://localhost:3000) in your browser to see the application rendered.
+  </div>
+</div>
+
+## Going live
+
+### Archive testing products
+
+Archive all test mode Stripe products before going live. Before creating your live mode products, make sure to follow the steps below to set up your live mode env vars and webhooks.
+
+### Configure production environment variables
+
+To run the project in live mode and process payments with Stripe, switch Stripe from "test mode" to "production mode." Your Stripe API keys will be different in production mode, and you will have to create a separate production mode webhook. Copy these values and paste them into Vercel, replacing the test mode values.

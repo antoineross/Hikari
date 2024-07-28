@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="6" height="6" viewBox="0 0 6 6" xml:space="preserve">
+    <defs>
+        <pattern id="pattern-6" patternUnits="userSpaceOnUse" width="6" height="6">
+    <path d="M7,1 l-2,-2 M0,0 l6,6 M1,7 l-2,-2" stroke="currentcolor" style="stroke: var(--pattern-channel-1, currentcolor)" />
+</pattern>
+    </defs>
+    <rect x="0" y="0" width="6" height="6" fill="url(#pattern-6)" />
+</svg>

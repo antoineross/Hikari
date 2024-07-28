@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="6" height="6" viewBox="0 0 6 6" xml:space="preserve">
+    <defs>
+        <pattern id="pattern-14" patternUnits="userSpaceOnUse" width="6" height="6">
+    <path d="M-1,5 l2,2 M5,7 l2,-2" style="stroke: var(--pattern-channel-1, currentcolor)" fill="none" />
+    <polyline points="0,0 3,3 6,0" style="stroke: var(--pattern-channel-1, currentcolor)" fill="none" />
+</pattern>
+    </defs>
+    <rect x="0" y="0" width="6" height="6" fill="url(#pattern-14)" />
+</svg>
