@@ -1,0 +1,353 @@
+---
+title: Complete Setup Guide for Hikari, a Nextjs Starter
+description: Setup your app in 10 minutes!
+date: 2024-08-03
+author: Antoine Ross
+---
+
+Hikari is a powerful, feature-rich Next.js SaaS starter designed to accelerate your development process. This guide will walk you through setting up Hikari, including its Supabase backend and Stripe integration.
+
+## Key Features
+
+- **Next.js 14.2.3**: Leveraging the latest features of Next.js for optimal performance.
+- **Supabase 1.172.2**: Robust backend solution for database management and authentication.
+- **Stripe.js 2.4.0**: Seamless payment processing with easy setup.
+- **TypeScript**: Enhanced code quality and developer productivity.
+- **TailwindCSS**: Rapid UI development with utility-first CSS.
+- **UI Components**: Rich set of pre-built components using shadcn/ui and magicui.
+- **Documentation Framework**: Integrated Fumadocs for easy documentation creation.
+- **Landing Page Components**: Complete set of customizable landing page elements.
+- **Dashboard and User Management**: Pre-built dashboard and user management pages.
+
+## Quick Start Guide
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/antoineross/Hikari.git
+cd Hikari
+```
+
+### 2. Install Dependencies
+
+Ensure you have [pnpm](https://pnpm.io/installation) installed and run:
+
+```bash
+pnpm install
+```
+
+### 3. Set Up Local Development Environment with Supabase
+
+#### Prerequisites
+
+- Install [Docker](https://www.docker.com/get-started/)
+- Set up environment files:
+  - Copy `.env.local.example` to `.env.local`
+  - Copy `.env.example` to `.env`
+
+#### Start Local Supabase Instance
+
+1. Start Supabase:
+   ```bash
+   npx supabase start
+   ```
+
+2. Configure environment variables:
+   - Copy the `service_role_key` from the terminal output.
+   - Set `SUPABASE_SERVICE_ROLE_KEY` in your `.env.local` file with this value.
+
+3. Get Supabase URLs:
+   ```bash
+   npx supabase status
+   ```
+   Copy the following values to your `.env.local` file:
+   - `API URL` as `NEXT_PUBLIC_SUPABASE_URL`
+   - `anon key` as `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `service_role key` as `SUPABASE_SERVICE_ROLE_KEY`
+
+4. Link local Supabase instance:
+   ```bash
+   npx supabase link
+   ```
+   Follow the prompts to link to your Supabase project.
+
+### 4. Set Up Stripe Integration
+
+#### Create a Stripe Account
+
+If you don't already have a Stripe account, [create one now](https://dashboard.stripe.com/register).
+
+#### Enable Test Mode
+
+Make sure you have the ["Test Mode" toggle](https://stripe.com/docs/testing) switched on in your Stripe dashboard for development purposes.
+
+#### Configure Stripe API Keys
+
+1. Go to the **API Keys** section on the Developers tab in your Stripe dashboard.
+2. Copy the `Publishable key` and `Secret key`.
+3. Paste them into your `.env.local` file:
+   ```bash
+   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_test_51PXT**********************************PpPple1"
+   STRIPE_SECRET_KEY="sk_test_5********************************************I7h"
+   ```
+
+#### Set Up Stripe CLI
+
+1. [Download and install the Stripe CLI](https://docs.stripe.com/stripe-cli).
+2. Log in to your Stripe account via the CLI:
+   ```bash
+   stripe login
+   ```
+
+#### Configure Webhook
+
+1. Forward events to your local webhook endpoint:
+   ```bash
+   stripe listen --forward-to http://localhost:3000/api/webhooks/stripe
+   ```
+2. Copy the webhook signing secret that's printed in the console.
+3. Add it to your `.env.local` file:
+   ```bash
+   STRIPE_WEBHOOK_SECRET="whsec_483**********************************d2118"
+   ```
+
+#### Create Products and Pricing
+
+Hikari uses a fixtures file to bootstrap test product and pricing data in your Stripe account. Here's an example of a comprehensive Stripe fixtures file:
+
+```json
+{
+  "_meta": {
+    "template_version": 0
+  },
+  "fixtures": [
+    {
+      "name": "prod_basic",
+      "path": "/v1/products",
+      "method": "post",
+      "params": {
+        "name": "Starter",
+        "description": "Kickstart your journey with some light-hearted fun.",
+        "metadata": {
+          "index": "0"
+        }
+      }
+    },
+    {
+      "name": "price_starter_month",
+      "path": "/v1/prices",
+      "method": "post",
+      "params": {
+        "product": "${prod_basic:id}",
+        "currency": "usd",
+        "billing_scheme": "per_unit",
+        "unit_amount": 1900,
+        "recurring": {
+          "interval": "month",
+          "interval_count": 1
+        }
+      }
+    },
+    {
+      "name": "price_starter_year",
+      "path": "/v1/prices",
+      "method": "post",
+      "params": {
+        "product": "${prod_basic:id}",
+        "currency": "usd",
+        "billing_scheme": "per_unit",
+        "unit_amount": 19000,
+        "recurring": {
+          "interval": "year",
+          "interval_count": 1
+        }
+      }
+    },
+    {
+      "name": "prod_pro",
+      "path": "/v1/products",
+      "method": "post",
+      "params": {
+        "name": "Pro",
+        "description": "For those who need a steady stream of humor in their lives.",
+        "metadata": {
+          "index": "1"
+        }
+      }
+    },
+    {
+      "name": "price_pro_month",
+      "path": "/v1/prices",
+      "method": "post",
+      "params": {
+        "product": "${prod_pro:id}",
+        "currency": "usd",
+        "billing_scheme": "per_unit",
+        "unit_amount": 4900,
+        "recurring": {
+          "interval": "month",
+          "interval_count": 1
+        }
+      }
+    },
+    {
+      "name": "price_pro_year",
+      "path": "/v1/prices",
+      "method": "post",
+      "params": {
+        "product": "${prod_pro:id}",
+        "currency": "usd",
+        "billing_scheme": "per_unit",
+        "unit_amount": 49000,
+        "recurring": {
+          "interval": "year",
+          "interval_count": 1
+        }
+      }
+    },
+    {
+      "name": "prod_enterprise",
+      "path": "/v1/products",
+      "method": "post",
+      "params": {
+        "name": "Enterprise",
+        "description": "For the serious humorist who needs all the laughs.",
+        "metadata": {
+          "index": "3"
+        }
+      }
+    },
+    {
+      "name": "price_enterprise_month",
+      "path": "/v1/prices",
+      "method": "post",
+      "params": {
+        "product": "${prod_enterprise:id}",
+        "currency": "usd",
+        "billing_scheme": "per_unit",
+        "unit_amount": 39900,
+        "recurring": {
+          "interval": "month",
+          "interval_count": 1
+        }
+      }
+    },
+    {
+      "name": "price_enterprise_year",
+      "path": "/v1/prices",
+      "method": "post",
+      "params": {
+        "product": "${prod_enterprise:id}",
+        "currency": "usd",
+        "billing_scheme": "per_unit",
+        "unit_amount": 399000,
+        "recurring": {
+          "interval": "year",
+          "interval_count": 1
+        }
+      }
+    }
+  ]
+}
+```
+
+To use this:
+
+1. Save the above JSON in `utils/stripe/fixtures/stripe-fixtures.json`.
+2. Ensure the Stripe CLI is listening to your local environment:
+   ```bash
+   stripe listen --forward-to http://localhost:3000/api/webhooks/stripe
+   ```
+3. Run the Stripe fixtures command to create the products in your Stripe account:
+   ```bash
+   pnpm stripe:fixtures
+   ```
+
+### 5. Set Up GitHub OAuth (Optional)
+
+1. Create a GitHub OAuth app following [this guide](https://supabase.com/docs/guides/auth/social-login/auth-github).
+
+2. Add the following to your `.env` file:
+   ```
+   SUPABASE_AUTH_EXTERNAL_GITHUB_REDIRECT_URI="http://127.0.0.1:54321/auth/v1/callback"
+   SUPABASE_AUTH_EXTERNAL_GITHUB_CLIENT_ID="your_client_id"
+   SUPABASE_AUTH_EXTERNAL_GITHUB_SECRET="your_client_secret"
+   ```
+
+### 6. Final Environment Setup
+
+Your `.env.local` file should now look similar to this:
+
+```bash
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+
+# Supabase Local Dev
+NEXT_PUBLIC_SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR************************************WNReilDMblYTn_I0"
+NEXT_PUBLIC_SUPABASE_URL="http://127.0.0.1:54321"
+SUPABASE_SERVICE_ROLE_KEY="eyJhbGciOiJIUzI1Ni******************************************Zx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU"
+
+# Stripe
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_test_51PXT**********************************PpPple1"
+STRIPE_SECRET_KEY="sk_test_5********************************************I7h"
+STRIPE_WEBHOOK_SECRET="whsec_483**********************************d2118"
+
+# Optional (for database security)
+DB_PASSWORD="your_database_password"
+```
+
+### 7. Run the Development Server
+
+1. Start the Next.js development server:
+   ```bash
+   pnpm dev
+   ```
+
+2. Open [http://localhost:3000](http://localhost:3000) in your browser to see your Hikari application.
+
+## Key Components
+
+### Supabase Integration
+
+Hikari uses Supabase for database management and authentication. The setup process includes:
+- Local Supabase instance setup
+- Environment variable configuration
+- Database schema management
+
+### Stripe Integration
+
+The Stripe integration in Hikari includes:
+- Webhook handling for various Stripe events
+- Product and pricing management using fixtures
+- Subscription handling
+
+### UI Components
+
+Hikari comes with a rich set of UI components, including:
+- Complete landing page elements
+- Dashboard components
+- User management interfaces
+
+## Customization
+
+While Hikari provides a solid starting point, it's designed to be customizable:
+- Modify the `stripe-fixtures.json` file to adjust product and pricing information
+- Customize UI components to match your brand
+- Extend the provided API routes and add new ones as needed
+
+## Important Notes
+
+- Stripe Checkout in Hikari supports pricing that bills a predefined amount at a specific interval. More complex plans (e.g., different pricing tiers or seats) are not yet supported.
+- Always ensure your Stripe webhook is correctly configured and that you've redeployed with all necessary environment variables.
+- The webhook listener must be running concurrently with your development server for the Stripe integration to function correctly.
+
+## Licensing
+
+Hikari is open-source and available under the MIT License, allowing for both personal and commercial use with proper attribution.
+
+## Conclusion
+
+Hikari provides a comprehensive starting point for your Next.js SaaS projects, combining powerful features with ease of use. By leveraging Hikari, you can focus on building your unique product features rather than setting up infrastructure and common SaaS components.
+
+Remember, Hikari is an evolving project. Check the official repository for the latest updates, features, and community contributions.
+
+Happy building with Hikari!
