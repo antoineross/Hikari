@@ -20,7 +20,6 @@ Next, in your Vercel deployment settings, add a new **Production** environment v
 ### Install dependencies
 
 Ensure you have [pnpm](https://pnpm.io/installation) installed and run:
-
 ```bash
 pnpm install
 ```
@@ -45,8 +44,13 @@ pnpm install
 <div className="steps">
   <div className="step">
     **Start Supabase**: Open your terminal. Run the following command to start a
-    local Supabase instance and set up the database schema: ```bash pnpm
-    supabase:start ``` Note the URLs provided in the terminal output for
+    local Supabase instance and set up the database schema:
+
+    ```bash
+    npx supabase start
+    ```
+
+    Note the URLs provided in the terminal output for
     accessing different services within the Supabase stack.
   </div>
   <div className="step">
@@ -56,17 +60,35 @@ pnpm install
   </div>
   <div className="step">
     **Print Supabase URLs**: Open your terminal. Run the following command to
-    print out the URLs: ```bash pnpm supabase:status ``` This will print the
+    print out the URLs:
+
+    ```bash
+    npx supabase status
+    ```
+
+    This will print the
     following keys that we will use in our environment variables. Copy these
-    values and paste them in your `.env.local` file: ```bash title=".env.local"
-    API URL: http://127.0.0.1:54321 # NEXT_PUBLIC_SUPABASE_URL anon key:
-    eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ******xad # NEXT_PUBLIC_SUPABASE_ANON_KEY
-    service_role key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9*******sad #
-    SUPABASE_SERVICE_ROLE_KEY ```
+    values and paste them in your `.env.local` file:
+    ```bash
+    # NEXT_PUBLIC_SUPABASE_URL
+    API URL: http://127.0.0.1:54321
+
+    # NEXT_PUBLIC_SUPABASE_ANON_KEY
+    anon key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ******xad
+
+    # SUPABASE_SERVICE_ROLE_KEY
+    service_role key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9*******sad
+    ```
   </div>
   <div className="step">
     **Link Local Supabase Instance to Project**: Open your terminal. Run the
-    following command: ```bash pnpm supabase:link ``` Navigate to the Supabase
+    following command:
+
+    ```bash
+    npx supabase link
+    ```
+
+    Navigate to the Supabase
     project you created. Enter your database password when prompted.
   </div>
 </div>
@@ -87,12 +109,19 @@ pnpm install
 <div className="steps">
   <div className="step">
     **Pull Schema Changes**: Open your terminal. Run the following command to
-    pull schema changes from your remote database: ```bash pnpm supabase:pull
+    pull schema changes from your remote database:
+
+    ```bash
+    npx supabase db pull
     ```
   </div>
   <div className="step">
-    **Seed Local Database**: Open your terminal. Run the following command to
-    generate seed data: ```bash pnpm supabase:generate-seed pnpm supabase:reset
+    **Seed Local Database**: Open your terminal. Run the following commands to
+    generate seed data:
+
+    ```bash
+    npx supabase db dump --data-only -f supabase/seed.sql
+    npx supabase db reset
     ```
   </div>
 </div>
@@ -102,19 +131,25 @@ pnpm install
 <div className="steps">
   <div className="step">
     **Generate TypeScript Types**: Open your terminal. Run the following command
-    to generate TypeScript types to match your schema: ```bash pnpm
-    supabase:generate-types ```
+    to generate TypeScript types to match your schema:
+
+    ```bash
+    npx supabase gen types typescript --local --schema public > types_db.ts
+    ```
   </div>
   <div className="step">
     **Generate Migration File**: Open your terminal. Run the following command
     to automatically generate a migration file with all the changes you've made
-    to your local database schema: 
-    ```bash 
-    pnpm supabase:generate-migration 
+    to your local database schema:
+
+    ```bash
+    npx supabase db diff | npx supabase migration new
     ```
-    Push those changes to your remote database with: 
-    ```bash 
-    pnpm supabase:push
+
+    Push those changes to your remote database with:
+
+    ```bash
+    npx supabase db push
     ```
   </div>
 </div>
@@ -126,13 +161,23 @@ pnpm install
 <div className="steps">
   <div className="step">
     **Login to Stripe Account**: Use the Stripe CLI to [login to your Stripe
-    account](https://stripe.com/docs/stripe-cli#login-account): ```bash pnpm
-    stripe:login ``` This will print a URL to navigate to in your browser and
+    account](https://stripe.com/docs/stripe-cli#login-account):
+
+    ```bash
+    pnpm stripe:login
+    ```
+
+    This will print a URL to navigate to in your browser and
     provide access to your Stripe account.
   </div>
   <div className="step">
-    **Start Local Webhook Forwarding**: Run the following command: ```bash pnpm
-    stripe:listen ``` This will print a webhook secret (such as `whsec_***`) to
+    **Start Local Webhook Forwarding**: Run the following command:
+
+    ```bash
+    pnpm stripe:listen
+    ```
+
+    This will print a webhook secret (such as `whsec_***`) to
     the console. Set `STRIPE_WEBHOOK_SECRET` to this value in your `.env.local`
     file. If you haven't already, set `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` and
     `STRIPE_SECRET_KEY` in your `.env.local` file using the **test mode** keys
@@ -172,8 +217,13 @@ DB_PASSWORD="W23**********s8e"
 <div className="steps">
   <div className="step">
     **Start Development Server**: Open a separate terminal. Run the following
-    command to start the development server: ```bash pnpm dev ``` Note that
-    webhook forwarding and the development server must be running concurrently
+    command to start the development server:
+
+    ```bash
+    pnpm dev
+    ```
+
+    Note that webhook forwarding and the development server must be running concurrently
     in two separate terminals for the application to work correctly.
   </div>
   <div className="step">

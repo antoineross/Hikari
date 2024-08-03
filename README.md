@@ -13,9 +13,9 @@ The all-in-one starter kit for high-performance SaaS applications.
 
 ## Demo
 
-- https://subscription-payments.vercel.app/
+- https://hikari.antoineross.com/
 
-[![Screenshot of demo](./public/demo.png)](https://subscription-payments.vercel.app/)
+[![Screenshot of demo](./public/hikari-landingpage.png)](https://hikari.antoineross.com/)
 
 ## Step-by-step setup
 
