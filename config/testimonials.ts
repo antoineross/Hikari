@@ -1,65 +1,121 @@
 export const testimonials = [
   {
-    name: 'Dávid Kálmán',
-    title: 'Co-founder, Futured',
-    avatarFallback: 'DK',
+    name: 'dcodesdev',
+    title: 'TypeScript Developer',
+    avatarFallback: 'DC',
     avatarImg: '/path/to/avatar1.png',
-    text: 'Working with this studio was a dream! Their attention to detail and creative flair brought our project to life. Highly recommend.'
+    text: "That's beautiful bro!"
   },
   {
-    name: 'Alexander Müller',
-    title: 'Creative Director at Innovate Designs',
-    avatarFallback: 'AM',
+    name: 'SuhailKakar',
+    title: 'Developer at joinOnboard',
+    avatarFallback: 'SK',
     avatarImg: '/path/to/avatar2.png',
-    text: "The team's exceptional design sense was evident in every aspect of our project. Their flawless execution and attention to detail resulted in a final product that exceeded our expectations. Working with them was a pleasure from start to finish."
+    text: "If you've built this a few months ago, it would have saved me hours :D"
   },
   {
-    name: 'Jennifer Lee',
-    title: 'Founder & CEO at Blossom Brands',
-    avatarFallback: 'JL',
+    name: 'SaidAitmbarek',
+    title: 'Founder of microlaunch.net',
+    avatarFallback: 'SA',
     avatarImg: '/path/to/avatar3.png',
-    text: "From the outset, their innovative approach breathed new life into our brand. Throughout our collaboration, they demonstrated a deep understanding of our vision, resulting in outcomes that speak volumes about their talent and commitment. We couldn't be happier with the results."
+    text: "So cool, looks really clean. Any plan to open source it? ☺️ Wanna play with it!"
   },
   {
-    name: 'Sophia Patel',
-    title: 'Marketing Manager at BrightFusion',
-    avatarFallback: 'SP',
+    name: 'magicuidesign',
+    title: 'UI Design Company',
+    avatarFallback: 'MU',
     avatarImg: '/path/to/avatar4.png',
-    text: "With a dedication to client satisfaction that's truly unmatched, this team exceeded all our expectations. Their commitment to delivering exceptional results was evident at every stage of our project. We're thrilled with the outcome of our collaboration."
+    text: "Clean 🤌"
   },
   {
-    name: 'Michael Chang',
-    title: 'CEO at TechNova Solutions',
-    avatarFallback: 'MC',
+    name: 'YasmeenRoumie',
+    title: 'Developer',
+    avatarFallback: 'YR',
     avatarImg: '/path/to/avatar5.png',
-    text: "The team's professionalism and expertise surpassed our expectations. They delivered exceptional results, exceeding every milestone."
+    text: "Ooh would love to try this out"
   },
   {
-    name: 'Lucas Rodriguez',
-    title: 'Product Development at Visionary Inn',
-    avatarFallback: 'LR',
+    name: 'shadcn',
+    title: 'Developer',
+    avatarFallback: 'SC',
     avatarImg: '/path/to/avatar6.png',
-    text: 'Their attention to detail and innovative approach made our collaboration seamless. They truly understood our vision and transformed our ideas into reality with incredible precision.'
+    text: "👀"
   },
   {
-    name: 'Rebecca Carter',
-    title: 'Marketing Director at Stellar Creations',
-    avatarFallback: 'RC',
+    name: 'bzagrodzki',
+    title: 'Developer',
+    avatarFallback: 'BZ',
     avatarImg: '/path/to/avatar7.png',
-    text: "Their ability to understand our brand's unique needs and translate them into stunning designs was truly remarkable. Throughout the project, they maintained clear communication and a high level of professionalism, ensuring a smooth and successful collaboration. We're thrilled with the outcome and look forward to working with them again."
+    text: "Nice one! But I would prefer some more \"sans\" font 😉"
   },
   {
-    name: 'Thomas Evans',
-    title: 'CEO at Nexus Technologies',
-    avatarFallback: 'TE',
+    name: 'MPlegas',
+    title: 'Developer',
+    avatarFallback: 'MP',
     avatarImg: '/path/to/avatar8.png',
-    text: 'In every interaction, this team demonstrated their professionalism and creativity. They consistently went above and beyond, delivering outstanding results with every project.'
+    text: "Exceptional!"
   },
   {
-    name: 'Emily Parker',
-    title: 'Art Director at PixelCraft Studios',
-    avatarFallback: 'EP',
+    name: 'Muhammet_Atas_',
+    title: 'Developer',
+    avatarFallback: 'MA',
     avatarImg: '/path/to/avatar9.png',
-    text: 'Impressive dedication to quality and deadlines. Our collaboration was smooth and productive, resulting in stunning outcomes.'
+    text: "I don't like light theme but this one look really clean and cool congrats👏🏻"
+  },
+  {
+    name: 'kvncyf_',
+    title: 'Developer',
+    avatarFallback: 'KC',
+    avatarImg: 'https://x.com/MPlegas/photo',
+    text: "Nice move. wanted to use it few months ago but was outdated in many ways"
+  },
+  {
+    name: '0xRaduan',
+    title: 'Developer',
+    avatarFallback: 'RA',
+    avatarImg: '/path/to/avatar11.png',
+    text: "This looks fire - where can I give a star / follow the development?"
+  },
+  {
+    name: 'Luax0',
+    title: 'Developer',
+    avatarFallback: 'LX',
+    avatarImg: '/path/to/avatar12.png',
+    text: "Can't wait to see more 👀"
+  },
+  {
+    name: '0xStanftf',
+    title: 'Developer',
+    avatarFallback: 'SF',
+    avatarImg: '/path/to/avatar13.png',
+    text: "Any GitHub repo Legend"
+  },
+  {
+    name: 'dew_yashtwt',
+    title: 'Developer',
+    avatarFallback: 'YD',
+    avatarImg: '/path/to/avatar14.png',
+    text: "Repo link?"
+  },
+  {
+    name: 'sanjay_4O4',
+    title: 'Developer',
+    avatarFallback: 'SK',
+    avatarImg: '/path/to/avatar15.png',
+    text: "Looks cool, throw auth using lucia and email using resend and it would be the perfect boilerplate"
+  },
+  {
+    name: 'ausrobdev',
+    title: 'Developer',
+    avatarFallback: 'RA',
+    avatarImg: '/path/to/avatar16.png',
+    text: "Let me know when its ready, I'll add it to buildatlightspeed.com - we need more high quality open source boilerplates"
+  },
+  {
+    name: 'DewanganSajal',
+    title: 'Developer',
+    avatarFallback: 'SD',
+    avatarImg: '/path/to/avatar17.png',
+    text: "Sir, If you could integrate stripe into this, then I am sold 🫡"
   }
 ];

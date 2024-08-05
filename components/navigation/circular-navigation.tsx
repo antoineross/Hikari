@@ -26,7 +26,7 @@ export default function CircularNavigation({
   const [showMobileMenu, setShowMobileMenu] = React.useState<boolean>(false);
 
   return (
-    <nav className="flex items-center justify-between w-full md:w-fit p-1 gap-20 bg-slate-50 dark:bg-slate-900 rounded-full px-8 border-2 border-muted/30 dark:border-muted/80 shadow-md mx-auto mt-4">
+    <nav className="flex items-center justify-between w-full md:w-fit p-1 gap-20 bg-zinc-50 dark:bg-zinc-900 rounded-full px-8 border-2 border-muted/30 dark:border-muted/80 shadow-md mx-auto mt-4">
       <div className="flex items-center space-x-2">
         <div className="bg-slate-50 dark:bg-slate-900 p-1 rounded-full">
           <Icons.Eclipse />
