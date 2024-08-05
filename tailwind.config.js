@@ -14,7 +14,7 @@ module.exports = {
   prefix: '',
   presets: [
     createPreset({
-      preset: 'ocean'
+      preset: 'dusk'
     })
   ],
   darkMode: ['class'],
