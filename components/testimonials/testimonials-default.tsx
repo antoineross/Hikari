@@ -4,8 +4,8 @@ import { testimonials } from '@/config/testimonials';
 
 export default function Testimonials() {
   const groupedTestimonials = [];
-  for (let i = 0; i < testimonials.length; i += 3) {
-    groupedTestimonials.push(testimonials.slice(i, i + 3));
+  for (let i = 0; i < testimonials.length; i += 4) {
+    groupedTestimonials.push(testimonials.slice(i, i + 4));
   }
 
   return (
@@ -29,19 +29,17 @@ export default function Testimonials() {
             {group.map((testimonial, index) => (
               <Card key={index} className="mb-4 h-full">
                 <CardHeader className="flex flex-row items-center bg-zinc-100 dark:bg-zinc-800 p-2 rounded-t-xl">
-                  <Avatar>
-                    <AvatarImage src={testimonial.avatarImg} />
-                    <AvatarFallback>
-                      {testimonial.avatarFallback}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="ml-4">
-                    <h3 className="text-sm font-semibold">
-                      {testimonial.name}
-                    </h3>
-                    <p className="text-xs text-muted-foreground">
-                      {testimonial.title}
-                    </p>
+                  <div className="flex items-center">
+                    <Avatar className="size-7 mr-2"> {/* Adjusted size for smaller avatar */}
+                      <AvatarImage src={testimonial.avatarImg} className="h-full w-full" />
+                      <AvatarFallback className="h-full w-full">
+                        {testimonial.avatarFallback}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col">
+                      <h3 className="text-sm font-semibold">{testimonial.name}</h3>
+                      <p className="text-xs text-muted-foreground">{testimonial.title}</p>
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent className="p-4 text-xs">
