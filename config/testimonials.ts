@@ -67,7 +67,7 @@ export const testimonials = [
     title: 'Developer',
     avatarFallback: 'RA',
     avatarImg: '/images/0xraduan.jpg',
-    text: "This looks fire."
+    text: "This looks fire"
   },
   {
     name: 'Luax0',

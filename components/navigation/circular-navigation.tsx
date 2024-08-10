@@ -26,12 +26,12 @@ export default function CircularNavigation({
   const [showMobileMenu, setShowMobileMenu] = React.useState<boolean>(false);
 
   return (
-    <nav className="flex items-center justify-between w-full md:w-fit p-1 gap-20 bg-zinc-50 dark:bg-zinc-900 rounded-full px-8 border-2 border-muted/30 dark:border-muted/80 shadow-md mx-auto mt-4">
+    <nav className="flex flex-wrap items-center justify-between w-full md:w-fit p-2 md:p-1 gap-4 md:gap-20 md:bg-zinc-50 md:dark:bg-zinc-900 md:rounded-full md:px-8 md:border-2 md:border-muted/30 md:dark:border-muted/80 md:shadow-md mx-auto mt-4 backdrop-blur-sm md:backdrop-blur-none">
       <div className="flex items-center space-x-2">
         <div className="bg-slate-50 dark:bg-slate-900 p-1 rounded-full">
           <Icons.Eclipse />
         </div>
-        <span className="text-xl font-bold">{siteConfig.name}</span>
+        <span className="text-lg md:text-xl font-bold">{siteConfig.name}</span>
       </div>
       {items?.length ? (
         <div className="hidden md:flex space-x-6">
@@ -53,12 +53,14 @@ export default function CircularNavigation({
         </div>
       ) : null}
       <div className="flex items-center space-x-2">
-        <ModeToggle />
+        <div className="hidden md:block">
+          <ModeToggle />
+        </div>
         <Link
           href={user ? '/dashboard' : '/signin'}
           className={cn(
-            buttonVariants({ variant: 'outline', size: 'md' }),
-            'rounded-2xl p-5'
+            buttonVariants({ variant: 'outline', size: 'sm' }),
+            'rounded-2xl p-2 md:p-5 text-xs md:text-sm hidden md:inline-flex'
           )}
         >
           {user ? 'Dashboard' : 'Login'}
@@ -67,12 +69,14 @@ export default function CircularNavigation({
           className="md:hidden"
           onClick={() => setShowMobileMenu(!showMobileMenu)}
         >
-          {showMobileMenu ? <Icons.close /> : <Icons.logo />}
-          <span className="font-bold">Menu</span>
+          {showMobileMenu ? <Icons.close /> : <Icons.Menu />}
+          <span className="sr-only">Menu</span>
         </button>
       </div>
       {showMobileMenu && items && (
-        <MobileNav items={items}>{children}</MobileNav>
+        <div className="absolute top-full left-0 right-0 w-full md:hidden mt-2">
+          <MobileNav items={items}>{children}</MobileNav>
+        </div>
       )}
     </nav>
   );

@@ -91,7 +91,34 @@ export default function PricingRounded({
     setPriceIdLoading(undefined);
   };
 
-  if (!products.length) {
+  // Default dummy pricing data
+  const dummyPricing = [
+    {
+      id: 'dummy-basic',
+      name: 'Basic Plan',
+      description: 'For individuals just getting started',
+      prices: [{ id: 'dummy-basic-price', currency: 'USD', unit_amount: 999, interval: 'month' }],
+      features: ['Feature 1', 'Feature 2', 'Feature 3']
+    },
+    {
+      id: 'dummy-pro',
+      name: 'Pro Plan',
+      description: 'For growing businesses',
+      prices: [{ id: 'dummy-pro-price', currency: 'USD', unit_amount: 2999, interval: 'month' }],
+      features: ['All Basic features', 'Feature 4', 'Feature 5', 'Feature 6']
+    },
+    {
+      id: 'dummy-enterprise',
+      name: 'Enterprise Plan',
+      description: 'For large organizations',
+      prices: [{ id: 'dummy-enterprise-price', currency: 'USD', unit_amount: 9999, interval: 'month' }],
+      features: ['All Pro features', 'Feature 7', 'Feature 8', 'Feature 9', 'Feature 10']
+    }
+  ];
+
+  const displayProducts = products.length ? products : dummyPricing;
+
+  if (!displayProducts.length) {
     return (
       <section className="container mx-auto" id="pricing">
         <div className="max-w-6xl px-4 py-8 mx-auto sm:py-24 sm:px-6 lg:px-8">
@@ -122,6 +149,11 @@ export default function PricingRounded({
             Whether you're one person trying to get ahead or a big firm trying
             to take over the world, we've got a plan for you.
           </p>
+          {products.length === 0 && (
+            <p className="mt-4 text-center text-red-500">
+              Note: This is dummy pricing data. Please add your own pricing data in the Stripe Dashboard to see actual plans. Alternatively, you may use the Stripe Fixtures command to create your own pricing data, see <a href="https://hikari.antoineross.com/docs/configure/stripe/local" className="underline" target="_blank" rel="noopener noreferrer">documentation</a>.
+            </p>
+          )}
           <div className="flex items-center justify-center mt-6 space-x-4">
             <Button
               className="rounded-4xl"
@@ -139,7 +171,7 @@ export default function PricingRounded({
             </Button>
           </div>
           <div className="grid gap-6 mt-10 md:grid-cols-3">
-            {products.map((product) => {
+            {displayProducts.map((product) => {
               const price = product?.prices?.find(
                 (price) => price.interval === billingInterval
               );
@@ -156,11 +188,11 @@ export default function PricingRounded({
                 ? 'border-black bg-white text-black'
                 : 'bg-white text-black';
 
-              // Use features from the pricingPlans config
+              // Use features from the pricingPlans config or dummy data
               const plan = pricingPlans.find(
                 (plan) => plan.name === product.name
               );
-              const features = plan ? plan.features : [];
+              const features = plan ? plan.features : (product.features || []);
 
               return (
                 <Card

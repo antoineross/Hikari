@@ -39,6 +39,7 @@ import {
   Eclipse,
   Bolt,
   Puzzle,
+  Menu,
   type Icon as LucideIcon
 } from 'lucide-react';
 
@@ -47,6 +48,7 @@ export type Icon = typeof LucideIcon;
 export const Icons = {
   Puzzle,
   Bolt,
+  Menu,
   Eclipse,
   SquarePen,
   Sparkles,

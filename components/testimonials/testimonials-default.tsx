@@ -15,7 +15,7 @@ export default function Testimonials() {
         <div className="flex-shrink px-2 text-center">
           <h2 className="text-3xl font-bold">Testimonials</h2>
           <p className="text-muted-foreground">
-            Don't take my word, take everyone else's
+            What everyone else is saying
           </p>
         </div>
         <div className="flex-grow border-t border-gray-300"></div>

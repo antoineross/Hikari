@@ -10,8 +10,12 @@ import AnimatedShinyText from '@/components/magicui/animated-shiny-text';
 import { ArrowRightIcon } from '@radix-ui/react-icons';
 import AvatarCircles from '@/components/magicui/avatar-circles';
 import { useTheme } from 'next-themes';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
+import { useState, useEffect, useRef } from 'react'
+import Image from 'next/image'
 
 export default function HeroSection() {
+  const { theme } = useTheme();
   const avatarUrls = [
     'https://avatars.githubusercontent.com/u/16860528',
     'https://avatars.githubusercontent.com/u/20110627',
@@ -19,7 +23,21 @@ export default function HeroSection() {
     'https://avatars.githubusercontent.com/u/59228569',
   ];
 
-  const { theme } = useTheme();
+  const quotes = [
+    { text: "That's beautiful bro!", author: "dcodesdev", title: "TypeScript Developer", avatarFallback: "DC", avatarImg: "/images/dcodes.png" },
+    { text: "If you've built this a few months ago, it would have saved me hours :D", author: "SuhailKakar", title: "Developer at joinOnboard", avatarFallback: "SK", avatarImg: "/images/SuhailKakar.jpg" },
+    { text: "So cool, looks really clean. Any plan to open source it? ☺️ Wanna play with it!", author: "SaidAitmbarek", title: "Founder of microlaunch.net", avatarFallback: "SA", avatarImg: "/images/said.jpg" },
+  ];
+
+  const [currentQuote, setCurrentQuote] = useState(0)
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCurrentQuote((prevQuote) => (prevQuote + 1) % quotes.length)
+    }, 5000) // Change quote every 5 seconds
+
+    return () => clearInterval(intervalId)
+  }, [])
 
   return (
     <section className="relative w-full overflow-hidden">
@@ -80,7 +98,7 @@ export default function HeroSection() {
                 ))}
               </div>
               <span className="text-xs font-semibold">
-                Join 100,000+ creators
+                Join 10,000+ developers
               </span>
             </div>
           </div>
