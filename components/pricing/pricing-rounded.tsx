@@ -91,30 +91,105 @@ export default function PricingRounded({
     setPriceIdLoading(undefined);
   };
 
-  // Default dummy pricing data
-  const dummyPricing = [
-    {
-      id: 'dummy-basic',
-      name: 'Basic Plan',
-      description: 'For individuals just getting started',
-      prices: [{ id: 'dummy-basic-price', currency: 'USD', unit_amount: 999, interval: 'month' }],
-      features: ['Feature 1', 'Feature 2', 'Feature 3']
-    },
-    {
-      id: 'dummy-pro',
-      name: 'Pro Plan',
-      description: 'For growing businesses',
-      prices: [{ id: 'dummy-pro-price', currency: 'USD', unit_amount: 2999, interval: 'month' }],
-      features: ['All Basic features', 'Feature 4', 'Feature 5', 'Feature 6']
-    },
-    {
-      id: 'dummy-enterprise',
-      name: 'Enterprise Plan',
-      description: 'For large organizations',
-      prices: [{ id: 'dummy-enterprise-price', currency: 'USD', unit_amount: 9999, interval: 'month' }],
-      features: ['All Pro features', 'Feature 7', 'Feature 8', 'Feature 9', 'Feature 10']
-    }
-  ];
+// Default dummy pricing data
+const dummyPricing: ProductWithPrices[] = [
+  {
+    id: 'dummy-basic',
+    name: 'Basic Plan',
+    description: 'For individuals just getting started',
+    prices: [
+      {
+        id: 'dummy-basic-price-month',
+        currency: 'USD',
+        unit_amount: 999,
+        interval: 'month',
+        interval_count: 1,
+        trial_period_days: null,
+        type: 'recurring',
+        active: true,
+        product_id: 'dummy-basic'
+      },
+      {
+        id: 'dummy-basic-price-year',
+        currency: 'USD',
+        unit_amount: 9990,
+        interval: 'year',
+        interval_count: 1,
+        trial_period_days: null,
+        type: 'recurring',
+        active: true,
+        product_id: 'dummy-basic'
+      }
+    ],
+    image: null,
+    metadata: null,
+    active: null
+  },
+  {
+    id: 'dummy-pro',
+    name: 'Pro Plan',
+    description: 'For growing businesses',
+    prices: [
+      {
+        id: 'dummy-pro-price-month',
+        currency: 'USD',
+        unit_amount: 2999,
+        interval: 'month',
+        interval_count: 1,
+        trial_period_days: null,
+        type: 'recurring',
+        active: true,
+        product_id: 'dummy-pro'
+      },
+      {
+        id: 'dummy-pro-price-year',
+        currency: 'USD',
+        unit_amount: 29990,
+        interval: 'year',
+        interval_count: 1,
+        trial_period_days: null,
+        type: 'recurring',
+        active: true,
+        product_id: 'dummy-pro'
+      }
+    ],
+    image: null,
+    metadata: null,
+    active: null
+  },
+  {
+    id: 'dummy-enterprise',
+    name: 'Enterprise Plan',
+    description: 'For large organizations',
+    prices: [
+      {
+        id: 'dummy-enterprise-price-month',
+        currency: 'USD',
+        unit_amount: 9999,
+        interval: 'month',
+        interval_count: 1,
+        trial_period_days: null,
+        type: 'recurring',
+        active: true,
+        product_id: 'dummy-enterprise'
+      },
+      {
+        id: 'dummy-enterprise-price-year',
+        currency: 'USD',
+        unit_amount: 99990,
+        interval: 'year',
+        interval_count: 1,
+        trial_period_days: null,
+        type: 'recurring',
+        active: true,
+        product_id: 'dummy-enterprise'
+      }
+    ],
+    image: null,
+    metadata: null,
+    active: null
+  }
+];
 
   const displayProducts = products.length ? products : dummyPricing;
 
@@ -149,7 +224,7 @@ export default function PricingRounded({
             Whether you're one person trying to get ahead or a big firm trying
             to take over the world, we've got a plan for you.
           </p>
-          {products.length === 0 && (
+          {displayProducts.length === 0 && (
             <p className="mt-4 text-center text-red-500">
               Note: This is dummy pricing data. Please add your own pricing data in the Stripe Dashboard to see actual plans. Alternatively, you may use the Stripe Fixtures command to create your own pricing data, see <a href="https://hikari.antoineross.com/docs/configure/stripe/local" className="underline" target="_blank" rel="noopener noreferrer">documentation</a>.
             </p>
@@ -188,11 +263,11 @@ export default function PricingRounded({
                 ? 'border-black bg-white text-black'
                 : 'bg-white text-black';
 
-              // Use features from the pricingPlans config or dummy data
+              // Use features from the pricingPlans config
               const plan = pricingPlans.find(
                 (plan) => plan.name === product.name
               );
-              const features = plan ? plan.features : (product.features || []);
+              const features = plan ? plan.features : [];
 
               return (
                 <Card
