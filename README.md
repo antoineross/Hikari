@@ -18,6 +18,7 @@ The all-in-one starter kit for building high-performance SaaS applications using
 - 🧪 **Testing Tools**: Integrated unit and e2e testing with Jest, React Testing Library, and Playwright
 - 🧑‍💻 **Developer Experience**: ESLint, Prettier, Husky, and Commitlint for maintaining code quality and consistency
 - ⚙️ **Local Development**: Develop locally with Supabase, Docker, and a set of custom commands
+- 📚 **Documentation & Blog**: Utilize MDX compiler from the open-source project Fumadocs for documentation and blog content.
 
 ## 🎬 Demo
 
