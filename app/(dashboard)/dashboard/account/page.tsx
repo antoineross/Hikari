@@ -1,30 +1,8 @@
-import {
-  TooltipProvider,
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent
-} from '@/components/ui/tooltip';
+
 import { LockIcon, Trash2Icon } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import Link from 'next/link';
-import { Sheet, SheetTrigger, SheetContent } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbSeparator,
-  BreadcrumbPage
-} from '@/components/ui/breadcrumb';
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuItem
-} from '@/components/ui/dropdown-menu';
 import {
   Card,
   CardHeader,
@@ -35,23 +13,6 @@ import {
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import {
-  Table,
-  TableHeader,
-  TableRow,
-  TableHead,
-  TableBody,
-  TableCell
-} from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem
-} from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
 
 import { createClient } from '@/utils/supabase/server';
 import {
@@ -60,7 +21,6 @@ import {
   getSubscription
 } from '@/utils/supabase/queries';
 import { redirect } from 'next/navigation';
-import { UserAccountNav } from '@/components/user-account-nav';
 import { updateName, updateEmail } from '@/utils/auth-helpers/server';
 
 export default async function Component() {
@@ -126,13 +86,13 @@ export default async function Component() {
               <div className="flex flex-col gap-2">
                 <Label htmlFor="plan">Plan</Label>
                 <div className="text-muted-foreground">
-                  {subscription.prices.products.name}
+                  {subscription.plan.name}
                 </div>
               </div>
               <div className="flex flex-col gap-2">
                 <Label htmlFor="renewal">Next Renewal</Label>
                 <div className="text-muted-foreground">
-                  {new Date(subscription.current_period_end).toLocaleDateString(
+                  {new Date(subscription.renews_at).toLocaleDateString(
                     'en-US',
                     { month: 'long', day: 'numeric', year: 'numeric' }
                   )}
@@ -141,8 +101,11 @@ export default async function Component() {
               <div className="flex flex-col gap-2">
                 <Label htmlFor="amount">Amount</Label>
                 <div className="text-muted-foreground">
-                  ${(subscription.prices.unit_amount / 100).toFixed(2)} /{' '}
-                  {subscription.prices.interval}
+                  {new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                    minimumFractionDigits: 2
+                  }).format(parseInt(subscription.price) / 100)}
                 </div>
               </div>
               <div className="flex flex-col gap-2">

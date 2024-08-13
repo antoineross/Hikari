@@ -2,8 +2,7 @@ import { createClient } from '@/utils/supabase/server';
 import {
   getProducts,
   getSubscription,
-  getUser,
-  getPlans
+  getUser
 } from '@/utils/supabase/queries';
 import PricingDefault from './pricing-default';
 import PricingRounded from './pricing-rounded';
@@ -12,12 +11,9 @@ export default async function PricingPage() {
   const supabase = createClient();
   const [user, products, subscription] = await Promise.all([
     getUser(supabase),
-    getPlans(supabase),
+    getProducts(supabase),
     getSubscription(supabase)
   ]);
-
-  console.log("products", products);
-  console.log("subscription", subscription);
 
   return (
     <PricingRounded

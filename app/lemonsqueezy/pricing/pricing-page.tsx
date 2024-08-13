@@ -45,7 +45,7 @@ export default function PricingContent({
           <DialogTitle className="mb-4">Select your plan</DialogTitle>
           <DialogDescription>
             <div className="flex gap-x-2 w-full">
-              {productVariants.data.map((variant: any) => (
+              {productVariants.data.slice(1).map((variant: any) => (
                 <div
                   key={variant.id}
                   className="border rounded-lg p-4 w-full justify-between"

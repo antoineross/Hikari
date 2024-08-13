@@ -136,6 +136,7 @@ export type Database = {
           full_name: string | null
           id: string
           payment_method: Json | null
+          role: string
         }
         Insert: {
           avatar_url?: string | null
@@ -143,6 +144,7 @@ export type Database = {
           full_name?: string | null
           id: string
           payment_method?: Json | null
+          role?: string
         }
         Update: {
           avatar_url?: string | null
@@ -150,6 +152,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           payment_method?: Json | null
+          role?: string
         }
         Relationships: [
           {
@@ -202,7 +205,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_admin: {
+        Args: {
+          user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never

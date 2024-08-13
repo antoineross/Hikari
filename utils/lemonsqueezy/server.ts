@@ -43,8 +43,8 @@ export async function logout() {
 }
 
 /**
- * Get product variants.
- */
+* ---------------------- GET PRODUCT VARIANTS ----------------------
+*/
 
 function createHeaders() {
   const headers = new Headers();
@@ -79,9 +79,9 @@ export async function getProductVariants(productId: string) {
 }
 
 /**
-* Create a checkout on Lemon Squeezy.
+* ---------------------- CHECKOUT ----------------------
 */
-export async function getCheckoutURL(variantId: number, embed = false) {
+export async function getCheckoutURL(variant_id: number, embed = false) {
 configureLemonSqueezy();
 
 const session = await auth();
@@ -92,7 +92,7 @@ if (!session?.user) {
 
 const checkout = await createCheckout(
   process.env.LEMONSQUEEZY_STORE_ID!,
-  variantId,
+  variant_id,
   {
     checkoutOptions: {
       embed,
@@ -106,8 +106,8 @@ const checkout = await createCheckout(
       },
     },
     productOptions: {
-      enabledVariants: [variantId],
-      redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/billing/`,
+      enabledVariants: [variant_id],
+      redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/account/`,
       receiptButtonText: "Go to Dashboard",
       receiptThankYouNote: "Thank you for signing up to Lemon Stand!",
     },
@@ -117,8 +117,9 @@ const checkout = await createCheckout(
 return checkout.data?.data.attributes.url;
 }
 
-
-
+/**
+* ---------------------- SETTING UP WEBHOOK ----------------------
+*/
 
 export async function hasWebhook() {
   configureLemonSqueezy();
@@ -145,6 +146,9 @@ export async function hasWebhook() {
     (wh) => wh.attributes.url === webhookUrl && wh.attributes.test_mode,
   );
 
+  // console.log("allWebhooks", allWebhooks);
+  console.log("allWebhooks data", allWebhooks.data?.data);
+
   return webhook;
 }
 
@@ -162,7 +166,7 @@ export async function setupWebhook() {
   if (!webhookUrl.endsWith("/")) {
     webhookUrl += "/";
   }
-  webhookUrl += "api/webhook";
+  webhookUrl += "api/webhooks/lemonsqueezy";
 
   // eslint-disable-next-line no-console -- allow
   console.log("Setting up a webhook on Lemon Squeezy (Test Mode)...");
@@ -190,12 +194,23 @@ export async function setupWebhook() {
   console.log(`Webhook ${webhook?.id} created on Lemon Squeezy.`);
 }
 
-
+/**
+* ---------------------- SYNC PLANS FROM VARIANTS TO DATABASE ----------------------
+*/
 export async function syncPlans() {
   configureLemonSqueezy()
 
-  const supabase = createServerSupabaseClient()
-
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    }
+  )
+  
   // Fetch all the plans from the database.
   const { data: existingPlans, error } = await supabase
     .from('plan')
@@ -212,7 +227,7 @@ export async function syncPlans() {
 
     const { error } = await supabase
       .from('plan')
-      .upsert(plan, { onConflict: 'variantId' })
+      .upsert(plan, { onConflict: 'variant_id' })
 
     if (error) {
       console.error(`Error syncing ${plan.name}:`, error)
@@ -299,7 +314,7 @@ export async function syncPlans() {
 }
 
 /**
- * This action will store a webhook event in the database.
+ * ---------------------- STORE WEBHOOK EVENT ----------------------
  * @param eventName - The name of the event.
  * @param body - The body of the event.
  */
@@ -307,9 +322,22 @@ export async function storeWebhookEvent(
   eventName: string,
   body: NewWebhookEvent["data"],
 ) {
-  const supabase = createServerSupabaseClient();
+  console.log(`Storing webhook event: ${eventName}`);
+
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    }
+  )
 
   const id = crypto.randomInt(100000000, 1000000000);
+
+  console.log(`Generated ID for webhook event: ${id}`);
 
   const { data, error } = await supabase
     .from('webhook_events')
@@ -327,13 +355,32 @@ export async function storeWebhookEvent(
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    console.error(`Error storing webhook event: ${error.message}`);
+    throw error;
+  }
+  console.log(`Successfully stored webhook event with ID: ${data.id}`);
   return data;
 }
 
+
+/**
+* ---------------------- PROCESS WEBHOOK EVENT ----------------------
+*/
 export async function processWebhookEvent(webhookEvent: NewWebhookEvent) {
+  console.log(`Processing webhook event: ${webhookEvent.id}`);
   configureLemonSqueezy();
-  const supabase = createServerSupabaseClient();
+
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    }
+  )
 
   const { data: dbWebhookEvent, error: fetchError } = await supabase
     .from('webhook_events')
@@ -342,12 +389,14 @@ export async function processWebhookEvent(webhookEvent: NewWebhookEvent) {
     .single();
 
   if (fetchError || !dbWebhookEvent) {
+    console.error(`Webhook event #${webhookEvent.id} not found in the database.`);
     throw new Error(
       `Webhook event #${webhookEvent.id} not found in the database.`,
     );
   }
 
   if (!process.env.WEBHOOK_URL) {
+    console.error("Missing required WEBHOOK_URL env variable.");
     throw new Error(
       "Missing required WEBHOOK_URL env variable. Please, set it in your .env file.",
     );
@@ -357,29 +406,35 @@ export async function processWebhookEvent(webhookEvent: NewWebhookEvent) {
 
   if (!webhookHasMeta(eventBody)) {
     processingError = "Event body is missing the 'meta' property.";
+    console.error(processingError);
   } else if (webhookHasData(eventBody)) {
     if (webhookEvent.event_type.startsWith("subscription_payment_")) {
       // Save subscription invoices; eventBody is a SubscriptionInvoice
       // Not implemented.
+      console.log("Subscription payment event received. Not implemented.");
     } else if (webhookEvent.event_type.startsWith("subscription_")) {
+      console.log("Processing subscription event");
       const attributes = eventBody.data.attributes;
-      const variantId = attributes.variant_id as number;
+      const variant_id = attributes.variant_id as number;
       const { data: plan, error: planError } = await supabase
         .from('plan')
         .select()
-        .eq('variantId', variantId)
+        .eq('variant_id', variant_id)
         .single();
 
       if (planError || !plan) {
-        processingError = `Plan with variantId ${variantId} not found.`;
+        processingError = `Plan with variant_id ${variant_id} not found.`;
+        console.error(processingError);
       } else {
         // Update the subscription in the database.
         const priceId = attributes.first_subscription_item.price_id;
 
         // Get the price data from Lemon Squeezy.
+        console.log(`Fetching price data for subscription ${eventBody.data.id}`);
         const priceData = await getPrice(priceId);
         if (priceData.error) {
           processingError = `Failed to get the price data for the subscription ${eventBody.data.id}.`;
+          console.error(processingError);
         }
 
         const isUsageBased = attributes.first_subscription_item.is_usage_based;
@@ -406,6 +461,7 @@ export async function processWebhookEvent(webhookEvent: NewWebhookEvent) {
         };
 
         // Create/update subscription in the database.
+        console.log(`Upserting subscription #${updateData.lemon_squeezy_id}`);
         const { error: upsertError } = await supabase
           .from('subscriptions')
           .upsert(updateData, {
@@ -414,18 +470,23 @@ export async function processWebhookEvent(webhookEvent: NewWebhookEvent) {
 
         if (upsertError) {
           processingError = `Failed to upsert Subscription #${updateData.lemon_squeezy_id} to the database.`;
-          console.error(upsertError);
+          console.error(processingError, upsertError);
+        } else {
+          console.log(`Successfully upserted subscription #${updateData.lemon_squeezy_id}`);
         }
       }
     } else if (webhookEvent.event_type.startsWith("order_")) {
       // Save orders; eventBody is a "Order"
       /* Not implemented */
+      console.log("Order event received. Not implemented.");
     } else if (webhookEvent.event_type.startsWith("license_")) {
       // Save license keys; eventBody is a "License key"
       /* Not implemented */
+      console.log("License event received. Not implemented.");
     }
 
     // Update the webhook event in the database.
+    console.log(`Updating webhook event #${webhookEvent.id}`);
     const { error: updateError } = await supabase
       .from('webhook_events')
       .update({
@@ -436,6 +497,280 @@ export async function processWebhookEvent(webhookEvent: NewWebhookEvent) {
 
     if (updateError) {
       console.error('Failed to update webhook event:', updateError);
+    } else {
+      console.log(`Successfully updated webhook event #${webhookEvent.id}`);
     }
   }
+}
+
+
+/**
+ * ---------------------- GET USER SUBSCRIPTIONS ----------------------
+ */
+export async function getUserSubscriptions() {
+  const session = await auth();
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    notFound();
+  }
+
+  const supabase = createServerSupabaseClient();
+  const { data: userSubscriptions, error } = await supabase
+    .from('subscriptions')
+    .select('*')
+    .eq('user_id', userId);
+
+  if (error) {
+    console.error('Error fetching user subscriptions:', error);
+    throw error;
+  }
+
+  return userSubscriptions as NewSubscription[];
+}
+
+/**
+ * This action will get the subscription URLs (update_payment_method and
+ * customer_portal) for the given subscription ID.
+ */
+export async function getSubscriptionURLs(id: string) {
+  configureLemonSqueezy();
+  const subscription = await getSubscription(id);
+
+  if (subscription.error) {
+    throw new Error(subscription.error.message);
+  }
+
+  return subscription.data?.data.attributes.urls;
+}
+
+/**
+ * This action will cancel a subscription on Lemon Squeezy.
+ */
+export async function cancelSub(id: string) {
+  configureLemonSqueezy();
+
+  // Get user subscriptions
+  const userSubscriptions = await getUserSubscriptions();
+
+  // Check if the subscription exists
+  const subscription = userSubscriptions.find(
+    (sub) => sub.lemon_squeezy_id === id,
+  );
+
+  if (!subscription) {
+    throw new Error(`Subscription #${id} not found.`);
+  }
+
+  const cancelledSub = await cancelSubscription(id);
+
+  if (cancelledSub.error) {
+    throw new Error(cancelledSub.error.message);
+  }
+
+  // Update the db
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    }
+  )
+
+  const { error } = await supabase
+    .from('subscriptions')
+    .update({
+      status: cancelledSub.data?.data.attributes.status,
+      status_formatted: cancelledSub.data?.data.attributes.status_formatted,
+      ends_at: cancelledSub.data?.data.attributes.ends_at,
+    })
+    .eq('lemon_squeezy_id', id);
+
+  if (error) {
+    throw new Error(`Failed to cancel Subscription #${id} in the database.`);
+  }
+
+  revalidatePath("/");
+
+  return cancelledSub;
+}
+
+/**
+ * This action will pause a subscription on Lemon Squeezy.
+ */
+export async function pauseUserSubscription(id: string) {
+  configureLemonSqueezy();
+
+  // Get user subscriptions
+  const userSubscriptions = await getUserSubscriptions();
+
+  // Check if the subscription exists
+  const subscription = userSubscriptions.find(
+    (sub) => sub.lemon_squeezy_id === id,
+  );
+
+  if (!subscription) {
+    throw new Error(`Subscription #${id} not found.`);
+  }
+
+  const returnedSub = await updateSubscription(id, {
+    pause: {
+      mode: "void",
+    },
+  });
+
+  // Update the db
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    }
+  )
+ 
+  const { error } = await supabase
+    .from('subscriptions')
+    .update({
+      status: returnedSub.data?.data.attributes.status,
+      status_formatted: returnedSub.data?.data.attributes.status_formatted,
+      ends_at: returnedSub.data?.data.attributes.ends_at,
+      is_paused: returnedSub.data?.data.attributes.pause !== null,
+    })
+    .eq('lemon_squeezy_id', id);
+
+  if (error) {
+    throw new Error(`Failed to pause Subscription #${id} in the database.`);
+  }
+
+  revalidatePath("/");
+
+  return returnedSub;
+}
+
+/**
+ * This action will unpause a subscription on Lemon Squeezy.
+ */
+export async function unpauseUserSubscription(id: string) {
+  configureLemonSqueezy();
+
+  // Get user subscriptions
+  const userSubscriptions = await getUserSubscriptions();
+
+  // Check if the subscription exists
+  const subscription = userSubscriptions.find(
+    (sub) => sub.lemon_squeezy_id === id,
+  );
+
+  if (!subscription) {
+    throw new Error(`Subscription #${id} not found.`);
+  }
+
+  const returnedSub = await updateSubscription(id, {
+    // @ts-expect-error -- null is a valid value for pause
+    pause: null,
+  });
+
+  // Update the db
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    }
+  )
+
+  const { error } = await supabase
+    .from('subscriptions')
+    .update({
+      status: returnedSub.data?.data.attributes.status,
+      status_formatted: returnedSub.data?.data.attributes.status_formatted,
+      ends_at: returnedSub.data?.data.attributes.ends_at,
+      is_paused: returnedSub.data?.data.attributes.pause !== null,
+    })
+    .eq('lemon_squeezy_id', id);
+
+  if (error) {
+    throw new Error(`Failed to unpause Subscription #${id} in the database.`);
+  }
+
+  revalidatePath("/");
+
+  return returnedSub;
+}
+
+/**
+ * This action will change the plan of a subscription on Lemon Squeezy.
+ */
+export async function changePlan(currentPlanId: number, newPlanId: number) {
+  configureLemonSqueezy();
+
+  // Get user subscriptions
+  const userSubscriptions = await getUserSubscriptions();
+
+  // Check if the subscription exists
+  const subscription = userSubscriptions.find(
+    (sub) => sub.plan_id === currentPlanId,
+  );
+
+  if (!subscription) {
+    throw new Error(
+      `No subscription with plan id #${currentPlanId} was found.`,
+    );
+  }
+
+  // Get the new plan details from the database.
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    }
+  )
+
+  const { data: newPlan, error: planError } = await supabase
+    .from('plan')
+    .select('*')
+    .eq('id', newPlanId)
+    .single();
+
+  if (planError || !newPlan) {
+    throw new Error(`Failed to fetch plan with id #${newPlanId}`);
+  }
+
+  // Send request to Lemon Squeezy to change the subscription.
+  const updatedSub = await updateSubscription(subscription.lemon_squeezy_id, {
+    variantId: newPlan.variant_id,
+  });
+
+  // Save in db
+  const { error: updateError } = await supabase
+    .from('subscriptions')
+    .update({
+      plan_id: newPlanId,
+      price: newPlan.price,
+      ends_at: updatedSub.data?.data.attributes.ends_at,
+    })
+    .eq('lemon_squeezy_id', subscription.lemon_squeezy_id);
+
+  if (updateError) {
+    throw new Error(
+      `Failed to update Subscription #${subscription.lemon_squeezy_id} in the database.`,
+    );
+  }
+
+  revalidatePath("/");
+
+  return updatedSub;
 }

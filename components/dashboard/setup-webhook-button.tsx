@@ -17,7 +17,7 @@ export function SetupWebhookButton({
   const beforeElement = loading ? (
     <Loading size="sm" className="size-4" />
   ) : (
-    <WebhookIcon className="size-4" />
+    <WebhookIcon className="size-4 mx-1" />
   );
 
   return (
@@ -47,6 +47,7 @@ export function SetupWebhookButton({
           setLoading(false);
         }
       }}
+      className="p-2"
     >
       Setup Webhook
     </Button>

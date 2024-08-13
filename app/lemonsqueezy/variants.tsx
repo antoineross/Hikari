@@ -36,3 +36,4 @@ export async function getProductVariants(productId: string) {
     const data = await response.json();
     return data;
 }
+
