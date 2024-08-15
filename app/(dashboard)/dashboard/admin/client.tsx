@@ -6,7 +6,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { toast } from "@/components/ui/use-toast";
 import { syncPlans } from "@/utils/lemonsqueezy/server";
 import { SetupWebhookButton } from "@/components/dashboard/setup-webhook-button";
-import { hasWebhook, getWebhookUrl } from "@/utils/lemonsqueezy/server";
 import { Package, CheckCircle, XCircle, RefreshCw } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 

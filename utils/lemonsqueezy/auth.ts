@@ -3,8 +3,14 @@ import { createClient } from "@supabase/supabase-js";
 
 export async function auth() {
   const supabase = createServerSupabaseClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  return session;
+  const { data: { user }, error } = await supabase.auth.getUser();
+  
+  if (error) {
+    console.error('Error getting user:', error);
+    return null;
+  }
+  
+  return user;
 }
 
 export async function signOut() {

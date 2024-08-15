@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion -- checked in configureLemonSqueezy() */
 "use server";
 
+import { SupabaseClient } from '@supabase/supabase-js';
 import crypto from "node:crypto";
 import {
   cancelSubscription,
@@ -28,6 +29,26 @@ type Tables = Database['public']['Tables'];
 type NewSubscription = Tables['subscriptions']['Insert'];
 type NewWebhookEvent = Tables['webhook_events']['Insert'];
 type NewPlan = Tables['plan']['Insert'];
+type SubscriptionAttributes = {
+  id: string;
+  order_id: number;
+  user_name: string;
+  user_email: string;
+  status: string;
+  status_formatted: string;
+  renews_at: string | null;
+  ends_at: string | null;
+  trial_ends_at: string | null;
+  variant_id: number;
+  pause: any;
+  first_subscription_item: {
+    id: number;
+    price_id: number;
+    is_usage_based: boolean;
+    price: number | string;
+  };
+};
+
 
 import { lemonSqueezySetup } from '@lemonsqueezy/lemonsqueezy.js'
 import { string } from "zod";
@@ -82,39 +103,39 @@ export async function getProductVariants(productId: string) {
 * ---------------------- CHECKOUT ----------------------
 */
 export async function getCheckoutURL(variant_id: number, embed = false) {
-configureLemonSqueezy();
+  configureLemonSqueezy();
 
-const session = await auth();
+  const user = await auth();
 
-if (!session?.user) {
-  throw new Error("User is not authenticated.");
-}
+  if (!user) {
+    throw new Error("User is not authenticated.");
+  }
 
-const checkout = await createCheckout(
-  process.env.LEMONSQUEEZY_STORE_ID!,
-  variant_id,
-  {
-    checkoutOptions: {
-      embed,
-      media: false,
-      logo: !embed,
-    },
-    checkoutData: {
-      email: session.user.email ?? undefined,
-      custom: {
-        user_id: session.user.id,
+  const checkout = await createCheckout(
+    process.env.LEMONSQUEEZY_STORE_ID!,
+    variant_id,
+    {
+      checkoutOptions: {
+        embed,
+        media: false,
+        logo: !embed,
+      },
+      checkoutData: {
+        email: user.email ?? undefined,
+        custom: {
+          user_id: user.id,
+        },
+      },
+      productOptions: {
+        enabledVariants: [variant_id],
+        redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/account/`,
+        receiptButtonText: "Go to Dashboard",
+        receiptThankYouNote: "Thank you for signing up to Lemon Stand!",
       },
     },
-    productOptions: {
-      enabledVariants: [variant_id],
-      redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/account/`,
-      receiptButtonText: "Go to Dashboard",
-      receiptThankYouNote: "Thank you for signing up to Lemon Stand!",
-    },
-  },
-);
+  );
 
-return checkout.data?.data.attributes.url;
+  return checkout.data?.data.attributes.url;
 }
 
 /**
@@ -124,16 +145,14 @@ return checkout.data?.data.attributes.url;
 export async function hasWebhook() {
   configureLemonSqueezy();
 
-  if (!process.env.WEBHOOK_URL) {
+  if (!process.env.WEBHOOK_URL || !process.env.LEMONSQUEEZY_STORE_ID) {
     throw new Error(
-      "Missing required WEBHOOK_URL env variable. Please, set it in your .env file.",
+      `Missing required env variable(s): ${!process.env.WEBHOOK_URL ? 'WEBHOOK_URL' : ''} ${!process.env.LEMONSQUEEZY_STORE_ID ? 'LEMONSQUEEZY_STORE_ID' : ''}. Please, set them in your .env file.`
     );
   }
 
   // Check if a webhook exists on Lemon Squeezy.
-  const allWebhooks = await listWebhooks({
-    filter: { storeId: process.env.LEMONSQUEEZY_STORE_ID },
-  });
+  const allWebhooks = await listWebhooks();
 
   // Check if WEBHOOK_URL ends with a slash. If not, add it.
   let webhookUrl = process.env.WEBHOOK_URL;
@@ -142,12 +161,20 @@ export async function hasWebhook() {
   }
   webhookUrl += "api/webhooks/lemonsqueezy";
 
-  const webhook = allWebhooks.data?.data.find(
-    (wh) => wh.attributes.url === webhookUrl && wh.attributes.test_mode,
+  // Filter the webhooks based on the store ID manually
+  const storeId = process.env.LEMONSQUEEZY_STORE_ID;
+  const filteredWebhooks = allWebhooks.data?.data.filter(
+    webhook => webhook.attributes.store_id.toString() === storeId
   );
 
-  // console.log("allWebhooks", allWebhooks);
-  console.log("allWebhooks data", allWebhooks.data?.data);
+  console.log("filteredWebhooks", filteredWebhooks);
+
+  // Find the specific webhook we're looking for
+  const webhook = filteredWebhooks?.find(
+    (wh) => wh.attributes.url === webhookUrl && wh.attributes.test_mode
+  );
+
+  console.log("Webhook", webhook);
 
   return webhook;
 }
@@ -371,7 +398,7 @@ export async function processWebhookEvent(webhookEvent: NewWebhookEvent) {
   console.log(`Processing webhook event: ${webhookEvent.id}`);
   configureLemonSqueezy();
 
-  const supabase = createClient(
+  const supabase = createClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     {
@@ -380,139 +407,276 @@ export async function processWebhookEvent(webhookEvent: NewWebhookEvent) {
         persistSession: false
       }
     }
-  )
+  );
 
-  const { data: dbWebhookEvent, error: fetchError } = await supabase
-    .from('webhook_events')
-    .select()
-    .eq('id', webhookEvent.id as number) // Ensure webhookEvent.id is treated as a number
-    .single();
-
-  if (fetchError || !dbWebhookEvent) {
-    console.error(`Webhook event #${webhookEvent.id} not found in the database.`);
-    throw new Error(
-      `Webhook event #${webhookEvent.id} not found in the database.`,
-    );
-  }
-
-  if (!process.env.WEBHOOK_URL) {
-    console.error("Missing required WEBHOOK_URL env variable.");
-    throw new Error(
-      "Missing required WEBHOOK_URL env variable. Please, set it in your .env file.",
-    );
-  }
   let processingError = "";
   const eventBody = webhookEvent.data;
 
-  if (!webhookHasMeta(eventBody)) {
-    processingError = "Event body is missing the 'meta' property.";
+  if (!webhookHasMeta(eventBody) || !webhookHasData(eventBody)) {
+    processingError = "Invalid webhook data structure.";
     console.error(processingError);
-  } else if (webhookHasData(eventBody)) {
-    if (webhookEvent.event_type.startsWith("subscription_payment_")) {
-      // Save subscription invoices; eventBody is a SubscriptionInvoice
-      // Not implemented.
-      console.log("Subscription payment event received. Not implemented.");
-    } else if (webhookEvent.event_type.startsWith("subscription_")) {
-      console.log("Processing subscription event");
-      const attributes = eventBody.data.attributes;
-      const variant_id = attributes.variant_id as number;
-      const { data: plan, error: planError } = await supabase
-        .from('plan')
-        .select()
-        .eq('variant_id', variant_id)
-        .single();
-
-      if (planError || !plan) {
-        processingError = `Plan with variant_id ${variant_id} not found.`;
-        console.error(processingError);
-      } else {
-        // Update the subscription in the database.
-        const priceId = attributes.first_subscription_item.price_id;
-
-        // Get the price data from Lemon Squeezy.
-        console.log(`Fetching price data for subscription ${eventBody.data.id}`);
-        const priceData = await getPrice(priceId);
-        if (priceData.error) {
-          processingError = `Failed to get the price data for the subscription ${eventBody.data.id}.`;
-          console.error(processingError);
-        }
-
-        const isUsageBased = attributes.first_subscription_item.is_usage_based;
-        const price = isUsageBased
-          ? priceData.data?.data.attributes.unit_price_decimal
-          : priceData.data?.data.attributes.unit_price;
-
-        const updateData: NewSubscription = {
-          lemon_squeezy_id: eventBody.data.id,
-          order_id: attributes.order_id as number,
-          name: attributes.user_name as string,
-          email: attributes.user_email as string,
-          status: attributes.status as string,
-          status_formatted: attributes.status_formatted as string,
-          renews_at: attributes.renews_at as string,
-          ends_at: attributes.ends_at as string,
-          trial_ends_at: attributes.trial_ends_at as string,
-          price: price?.toString() ?? "",
-          is_paused: false,
-          is_usage_based: attributes.first_subscription_item.is_usage_based,
-          subscription_item_id: attributes.first_subscription_item.id,
-          user_id: eventBody.meta.custom_data.user_id,
-          plan_id: plan.id, // Changed from plan[0].id to plan.id
-        };
-
-        // Create/update subscription in the database.
-        console.log(`Upserting subscription #${updateData.lemon_squeezy_id}`);
-        const { error: upsertError } = await supabase
-          .from('subscriptions')
-          .upsert(updateData, {
-            onConflict: 'lemon_squeezy_id',
-          });
-
-        if (upsertError) {
-          processingError = `Failed to upsert Subscription #${updateData.lemon_squeezy_id} to the database.`;
-          console.error(processingError, upsertError);
-        } else {
-          console.log(`Successfully upserted subscription #${updateData.lemon_squeezy_id}`);
-        }
-      }
-    } else if (webhookEvent.event_type.startsWith("order_")) {
-      // Save orders; eventBody is a "Order"
-      /* Not implemented */
-      console.log("Order event received. Not implemented.");
-    } else if (webhookEvent.event_type.startsWith("license_")) {
-      // Save license keys; eventBody is a "License key"
-      /* Not implemented */
-      console.log("License event received. Not implemented.");
-    }
-
-    // Update the webhook event in the database.
-    console.log(`Updating webhook event #${webhookEvent.id}`);
-    const { error: updateError } = await supabase
-      .from('webhook_events')
-      .update({
-        processed: true,
-        processing_error: processingError ?? null,
-      })
-      .eq('id', webhookEvent.id as number);
-
-    if (updateError) {
-      console.error('Failed to update webhook event:', updateError);
-    } else {
-      console.log(`Successfully updated webhook event #${webhookEvent.id}`);
-    }
+    return;
   }
+
+  const eventType = webhookEvent.event_type;
+  const attributes = eventBody.data.attributes as SubscriptionAttributes;
+  const subscriptionId = eventBody.data.id;
+
+  console.log(`Processing ${eventType} for subscription ${subscriptionId}`);
+
+  try {
+    switch (eventType) {
+      case 'subscription_created':
+        await handleSubscriptionCreated(supabase, subscriptionId, attributes, eventBody);
+        break;
+      case 'subscription_updated':
+        await handleSubscriptionUpdate(supabase, subscriptionId, attributes, eventBody);
+        break;
+      case 'subscription_cancelled':
+        await handleSubscriptionCancellation(supabase, subscriptionId, attributes);
+        break;
+      case 'subscription_resumed':
+        await handleSubscriptionResume(supabase, subscriptionId, attributes);
+        break;
+      case 'subscription_paused':
+        await handleSubscriptionPause(supabase, subscriptionId, attributes);
+        break;
+      case 'subscription_unpaused':
+        await handleSubscriptionUnpause(supabase, subscriptionId, attributes);
+        break;
+      default:
+        console.log(`Unhandled event type: ${eventType}`);
+    }
+  } catch (error) {
+    processingError = `Error processing ${eventType}: ${(error as Error).message}`;
+    console.error(processingError);
+  }
+
+  // Update the webhook event in the database
+  await updateWebhookEventStatus(supabase, webhookEvent.id as number, processingError);
 }
 
+
+async function handleSubscriptionCreated(
+  supabase: SupabaseClient<Database>,
+  subscriptionId: string,
+  attributes: SubscriptionAttributes,
+  eventBody: any
+) {
+  const { data: currentPlan, error: planError } = await supabase
+    .from('plan')
+    .select('id')
+    .eq('variant_id', attributes.variant_id)
+    .single();
+
+  if (planError || !currentPlan) {
+    throw new Error(`Failed to fetch plan for variant ${attributes.variant_id}`);
+  }
+
+  const priceId = attributes.first_subscription_item.price_id;
+  const priceData = await getPrice(priceId);
+  if (priceData.error) {
+    throw new Error(`Failed to get the price data for the subscription ${subscriptionId}`);
+  }
+
+  const isUsageBased = attributes.first_subscription_item.is_usage_based;
+  const price = isUsageBased
+    ? priceData.data?.data.attributes.unit_price_decimal
+    : priceData.data?.data.attributes.unit_price;
+
+  const newSubscription: NewSubscription = {
+    lemon_squeezy_id: subscriptionId,
+    order_id: attributes.order_id as number,
+    name: attributes.user_name as string,
+    email: attributes.user_email as string,
+    status: attributes.status,
+    status_formatted: attributes.status_formatted,
+    renews_at: attributes.renews_at,
+    ends_at: attributes.ends_at,
+    trial_ends_at: attributes.trial_ends_at,
+    price: price?.toString() ?? "",
+    is_paused: false,
+    subscription_item_id: attributes.first_subscription_item.id,
+    is_usage_based: attributes.first_subscription_item.is_usage_based,
+    user_id: eventBody.meta.custom_data.user_id,
+    plan_id: currentPlan.id,
+  };
+
+  const { error } = await supabase
+    .from('subscriptions')
+    .insert(newSubscription);
+
+  if (error) {
+    throw new Error(`Failed to create subscription ${subscriptionId}: ${error.message}`);
+  }
+
+  console.log(`Successfully created subscription ${subscriptionId}`);
+}
+
+async function handleSubscriptionUpdate(
+  supabase: SupabaseClient<Database>,
+  subscriptionId: string,
+  attributes: SubscriptionAttributes,
+  eventBody: any
+) {
+  const { data: currentPlan, error: planError } = await supabase
+    .from('plan')
+    .select('id')
+    .eq('variant_id', attributes.variant_id)
+    .single();
+
+  if (planError || !currentPlan) {
+    throw new Error(`Failed to fetch plan for variant ${attributes.variant_id}`);
+  }
+
+  const priceId = attributes.first_subscription_item.price_id;
+  const priceData = await getPrice(priceId);
+  if (priceData.error) {
+    throw new Error(`Failed to get the price data for the subscription ${subscriptionId}`);
+  }
+
+  const isUsageBased = attributes.first_subscription_item.is_usage_based;
+  const price = isUsageBased
+    ? priceData.data?.data.attributes.unit_price_decimal
+    : priceData.data?.data.attributes.unit_price;
+
+  const updateData: NewSubscription = {
+    lemon_squeezy_id: subscriptionId,
+    order_id: attributes.order_id as number,
+    name: attributes.user_name as string,
+    email: attributes.user_email as string,
+    status: attributes.status,
+    status_formatted: attributes.status_formatted,
+    renews_at: attributes.renews_at,
+    ends_at: attributes.ends_at,
+    trial_ends_at: attributes.trial_ends_at,
+    price: price?.toString() ?? "",
+    is_paused: false,
+    subscription_item_id: attributes.first_subscription_item.id,
+    is_usage_based: attributes.first_subscription_item.is_usage_based,
+    user_id: eventBody.meta.custom_data.user_id,
+    plan_id: currentPlan.id,
+  };
+
+  console.log("handleSubscriptionUpdate updateData:", updateData);
+
+  const { error } = await supabase
+    .from('subscriptions')
+    .update(updateData)
+    .eq('lemon_squeezy_id', subscriptionId);
+
+  if (error) {
+    throw new Error(`Failed to update subscription ${subscriptionId}: ${error.message}`);
+  }
+
+  console.log(`Successfully updated subscription ${subscriptionId}`);
+}
+
+async function handleSubscriptionCancellation(
+  supabase: SupabaseClient<Database>,
+  subscriptionId: string,
+  attributes: SubscriptionAttributes
+) {
+  const updateData = {
+    status: attributes.status,
+    status_formatted: attributes.status_formatted,
+    ends_at: attributes.ends_at,
+  };
+
+  await updateSubscriptionInDatabase(supabase, subscriptionId, updateData);
+}
+
+async function handleSubscriptionResume(
+  supabase: SupabaseClient<Database>,
+  subscriptionId: string,
+  attributes: SubscriptionAttributes
+) {
+  const updateData = {
+    status: attributes.status,
+    status_formatted: attributes.status_formatted,
+    ends_at: attributes.ends_at,
+    is_paused: false,
+  };
+
+  await updateSubscriptionInDatabase(supabase, subscriptionId, updateData);
+}
+
+async function handleSubscriptionPause(
+  supabase: SupabaseClient<Database>,
+  subscriptionId: string,
+  attributes: SubscriptionAttributes
+) {
+  const updateData = {
+    status: attributes.status,
+    status_formatted: attributes.status_formatted,
+    ends_at: attributes.ends_at,
+    is_paused: attributes.pause !== null,
+  };
+
+  await updateSubscriptionInDatabase(supabase, subscriptionId, updateData);
+}
+
+async function handleSubscriptionUnpause(
+  supabase: SupabaseClient<Database>,
+  subscriptionId: string,
+  attributes: SubscriptionAttributes
+) {
+  const updateData = {
+    status: attributes.status,
+    status_formatted: attributes.status_formatted,
+    ends_at: attributes.ends_at,
+    is_paused: false,
+  };
+
+  await updateSubscriptionInDatabase(supabase, subscriptionId, updateData);
+}
+
+async function updateSubscriptionInDatabase(
+  supabase: SupabaseClient<Database>,
+  subscriptionId: string,
+  updateData: Partial<Tables['subscriptions']['Update']>
+) {
+  const { error } = await supabase
+    .from('subscriptions')
+    .update(updateData)
+    .eq('lemon_squeezy_id', subscriptionId);
+
+  if (error) {
+    throw new Error(`Failed to update subscription ${subscriptionId}: ${error.message}`);
+  }
+
+  console.log(`Successfully updated subscription ${subscriptionId}`);
+}
+
+async function updateWebhookEventStatus(
+  supabase: SupabaseClient<Database>,
+  eventId: number,
+  processingError: string
+) {
+  const { error } = await supabase
+    .from('webhook_events')
+    .update({
+      processed: true,
+      processing_error: processingError || null,
+    })
+    .eq('id', eventId);
+
+  if (error) {
+    console.error(`Failed to update webhook event ${eventId}:`, error);
+  } else {
+    console.log(`Successfully updated webhook event ${eventId}`);
+  }
+}
 
 /**
  * ---------------------- GET USER SUBSCRIPTIONS ----------------------
  */
 export async function getUserSubscriptions() {
-  const session = await auth();
-  const userId = session?.user?.id;
+  const user = await auth();
+  const userId = user?.id;
 
   if (!userId) {
-    notFound();
+    throw new Error("User is not authenticated.");
   }
 
   const supabase = createServerSupabaseClient();
@@ -542,6 +706,21 @@ export async function getSubscriptionURLs(id: string) {
   }
 
   return subscription.data?.data.attributes.urls;
+}
+
+/**
+ * This action will get the signed customer portal URL for the given subscription ID.
+ */
+
+export async function getSignedCustomerPortalURL(subscriptionId: string) {
+  configureLemonSqueezy();
+  const subscription = await getSubscription(subscriptionId);
+
+  if (subscription.error) {
+    throw new Error(subscription.error.message);
+  }
+
+  return subscription.data?.data.attributes.urls.customer_portal;
 }
 
 /**

@@ -14,6 +14,7 @@ import { User } from '@supabase/supabase-js';
 import { useRouter, usePathname } from 'next/navigation';
 import { Moon } from 'lucide-react';
 import pricingPlans from '@/config/pricing';
+import { getSignedCustomerPortalURL } from '@/utils/lemonsqueezy/server';
 
 interface Plan {
   id: number;
@@ -80,14 +81,25 @@ export default function PricingRounded({
     }
 
     try {
-      const checkoutUrl = await getCheckoutURL(plan.variant_id);
-      if (checkoutUrl) {
-        window.location.href = checkoutUrl;
+      if (subscription && subscription.status === 'active') {
+        // If user is already subscribed, get the customer portal URL
+        const customerPortalURL = await getSignedCustomerPortalURL(subscription.lemon_squeezy_id);
+        if (customerPortalURL) {
+          window.open(customerPortalURL, '_blank', 'noopener,noreferrer');
+        } else {
+          throw new Error('Customer portal URL is undefined');
+        }
       } else {
-        throw new Error('Checkout URL is undefined');
+        // If user is not subscribed, proceed with checkout
+        const checkoutUrl = await getCheckoutURL(plan.variant_id);
+        if (checkoutUrl) {
+          window.location.href = checkoutUrl;
+        } else {
+          throw new Error('Checkout URL is undefined');
+        }
       }
     } catch (error) {
-      console.error('Error getting checkout URL:', error);
+      console.error('Error getting URL:', error);
       // Handle error (e.g., show error message to user)
     }
 
@@ -161,7 +173,7 @@ export default function PricingRounded({
                     onClick={() => handleCheckout(product)}
                     className="mt-4 w-full rounded-4xl"
                   >
-                    {subscription ? 'Manage' : 'Subscribe'}
+                    {isActive ? 'Manage' : (product.price > (subscription?.price ?? 0) ? 'Upgrade' : 'Subscribe')}
                   </Button>
                   <ul className="mt-4 space-y-2">
                     {features.map((feature, index) => (

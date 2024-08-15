@@ -16,7 +16,7 @@ import { redirect } from 'next/navigation';
 import {
   LineChart,
   Package,
-  Package2,
+  Receipt,
   Settings,
   ShieldEllipsis,
   ShoppingCart,
@@ -69,6 +69,21 @@ export default async function DashboardLayout({
                 </Link>
               </TooltipTrigger>
               <TooltipContent side="right">Admin</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href="/dashboard/billing"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                  prefetch={false}
+                >
+                  <Receipt className="h-5 w-5" />
+                  <span className="sr-only">Billing</span>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side="right">Billing</TooltipContent>
             </Tooltip>
           </TooltipProvider>
           <TooltipProvider>
