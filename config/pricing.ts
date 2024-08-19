@@ -21,7 +21,7 @@ const pricingPlans: Plan[] = [
     yearlyPrice: 9000
   },
   {
-    name: 'Premium',
+    name: 'Pro',
     description: 'For those who need a steady stream of humor in their lives.',
     features: [
       'Hourly dad jokes',

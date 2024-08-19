@@ -45,3 +45,14 @@ export async function getUser() {
     return null;
   }
 }
+
+export async function getPostForUser(postId: Post['id'], userId: User['id']) {
+  const supabase = createServerSupabaseClient();
+  const { data } = await supabase
+    .from('posts')
+    .select('*')
+    .eq('id', postId)
+    .eq('author_id', userId)
+    .single();
+  return data ? { ...data, content: data.content as unknown as JSON } : null;
+}

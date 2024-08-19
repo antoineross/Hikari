@@ -16,9 +16,8 @@ import { redirect } from 'next/navigation';
 import {
   LineChart,
   Package,
-  Receipt,
+  Package2,
   Settings,
-  ShieldEllipsis,
   ShoppingCart,
   User,
   Inbox
@@ -56,36 +55,6 @@ export default async function DashboardLayout({
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
         <Sidebar navConfig={navConfig as NavItem[]} />
         <nav className="mt-auto flex flex-col items-center gap-2 px-2 sm:py-5">
-        <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="/dashboard/admin"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                  prefetch={false}
-                >
-                  <ShieldEllipsis className="h-5 w-5" />
-                  <span className="sr-only">Admin</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">Admin</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="/dashboard/billing"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                  prefetch={false}
-                >
-                  <Receipt className="h-5 w-5" />
-                  <span className="sr-only">Billing</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">Billing</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
