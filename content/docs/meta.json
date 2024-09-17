@@ -5,12 +5,6 @@
     "index",
     "quick-start",
     "---Configure---",
-    "...configure",
-    "---Components---",
-    "/components/logo-cloud",
-    "/components/features",
-    "/components/testimonials",
-    "/components/faq",
-    "/components/footer"
+    "...configure"
   ]
 }

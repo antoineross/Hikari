@@ -16,7 +16,6 @@ import { redirect } from 'next/navigation';
 import { Settings, User } from 'lucide-react';
 import { Navbar } from '@/components/dashboard-navbar';
 import Sidebar from '@/components/dashboard-sidebar';
-import { Separator } from '@/components/ui/separator';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;

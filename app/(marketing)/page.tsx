@@ -6,8 +6,6 @@ import FeaturesHover from '@/components/landing-page/features-hover';
 import Pricing from '@/components/pricing/pricing-primary';
 import Link from 'next/link';
 import Image from 'next/image';
-import { AnimatedBeamMultipleOutputDemo } from '@/components/animated-beam';
-import { BentoDemo } from '@/components/landing-page/features-bento-grid';
 
 export default async function IndexPage() {
   return (

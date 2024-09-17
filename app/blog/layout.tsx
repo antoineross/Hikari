@@ -1,11 +1,10 @@
 import { marketingConfig } from '@/config/marketing';
 
-import { MainNav } from '@/components/navigation';
-import FooterPrimary from '@/components/footer/footer-blog';
-import Header from '@/components/header';
-import React, { createContext } from 'react';
-
-import { getUser } from '../supabase-server';
+import CircularNavigation from '@/components/navigation';
+import FooterPrimary from '@/components/footer-blog';
+import React from 'react';
+import { createClient } from '@/utils/supabase/client';
+import { getUser } from '@/utils/supabase/queries';
 
 interface MarketingLayoutProps {
   children: React.ReactNode;
@@ -14,24 +13,14 @@ interface MarketingLayoutProps {
 export default async function MarketingLayout({
   children
 }: MarketingLayoutProps) {
-  const user = await getUser();
+  const supabase = createClient();
+  const user = await getUser(supabase);
+
   return (
     <div className="flex min-h-screen flex-col items-center w-full">
-      {/* <Header
-        NavigationComponent={CircularNavigation}
-        navigationProps={{ items: marketingConfig.mainNav }}
-        navType="circular"
-        user={user}
-      /> */}
-      <Header
-        NavigationComponent={MainNav}
-        navigationProps={{ items: marketingConfig.mainNav }}
-        navType="between"
-        user={user}
-      />
+      <CircularNavigation items={marketingConfig.mainNav} user={user ? true : false} />
       <main className="flex-1">{children}</main>
       <FooterPrimary />
-      {/* <FooterBlack /> */}
     </div>
   );
 }
