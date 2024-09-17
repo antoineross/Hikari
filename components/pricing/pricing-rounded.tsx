@@ -16,6 +16,7 @@ import { User } from '@supabase/supabase-js';
 import { useRouter, usePathname } from 'next/navigation';
 import { Moon } from 'lucide-react';
 import pricingPlans from '@/config/pricing';
+import { dummyPricing } from '@/config/pricing';
 
 type Subscription = Tables<'subscriptions'>;
 type Product = Tables<'products'>;
@@ -90,106 +91,6 @@ export default function PricingRounded({
 
     setPriceIdLoading(undefined);
   };
-
-// Default dummy pricing data
-const dummyPricing: ProductWithPrices[] = [
-  {
-    id: 'dummy-basic',
-    name: 'Basic Plan',
-    description: 'For individuals just getting started',
-    prices: [
-      {
-        id: 'dummy-basic-price-month',
-        currency: 'USD',
-        unit_amount: 999,
-        interval: 'month',
-        interval_count: 1,
-        trial_period_days: null,
-        type: 'recurring',
-        active: true,
-        product_id: 'dummy-basic'
-      },
-      {
-        id: 'dummy-basic-price-year',
-        currency: 'USD',
-        unit_amount: 9990,
-        interval: 'year',
-        interval_count: 1,
-        trial_period_days: null,
-        type: 'recurring',
-        active: true,
-        product_id: 'dummy-basic'
-      }
-    ],
-    image: null,
-    metadata: null,
-    active: null
-  },
-  {
-    id: 'dummy-pro',
-    name: 'Pro Plan',
-    description: 'For growing businesses',
-    prices: [
-      {
-        id: 'dummy-pro-price-month',
-        currency: 'USD',
-        unit_amount: 2999,
-        interval: 'month',
-        interval_count: 1,
-        trial_period_days: null,
-        type: 'recurring',
-        active: true,
-        product_id: 'dummy-pro'
-      },
-      {
-        id: 'dummy-pro-price-year',
-        currency: 'USD',
-        unit_amount: 29990,
-        interval: 'year',
-        interval_count: 1,
-        trial_period_days: null,
-        type: 'recurring',
-        active: true,
-        product_id: 'dummy-pro'
-      }
-    ],
-    image: null,
-    metadata: null,
-    active: null
-  },
-  {
-    id: 'dummy-enterprise',
-    name: 'Enterprise Plan',
-    description: 'For large organizations',
-    prices: [
-      {
-        id: 'dummy-enterprise-price-month',
-        currency: 'USD',
-        unit_amount: 9999,
-        interval: 'month',
-        interval_count: 1,
-        trial_period_days: null,
-        type: 'recurring',
-        active: true,
-        product_id: 'dummy-enterprise'
-      },
-      {
-        id: 'dummy-enterprise-price-year',
-        currency: 'USD',
-        unit_amount: 99990,
-        interval: 'year',
-        interval_count: 1,
-        trial_period_days: null,
-        type: 'recurring',
-        active: true,
-        product_id: 'dummy-enterprise'
-      }
-    ],
-    image: null,
-    metadata: null,
-    active: null
-  }
-];
 
   const displayProducts = products.length ? products : dummyPricing;
 
@@ -274,9 +175,11 @@ const dummyPricing: ProductWithPrices[] = [
                   key={product.id}
                   className={`w-full max-w-sm rounded-4xl border-2 ${cardBgColor}`}
                 >
-                  <CardHeader className="rounded-t-4xl">
-                    <Moon className="h-8 w-8 text-gray-600" />
-                    <CardTitle>{product.name}</CardTitle>
+                  <CardHeader className="rounded-t-4xl flex flex-col justify-center">
+                    <div className="flex items-center">
+                      <Moon className="h-8 w-8 text-gray-600 fill-zinc-500" />
+                      <CardTitle className="ml-2 text-2xl font-bold">{product.name}</CardTitle>
+                    </div>
                   </CardHeader>
                   <CardContent>
                     <div className="text-4xl font-bold py-8">{priceString}</div>

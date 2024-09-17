@@ -1,6 +1,6 @@
 import { marketingConfig } from '@/config/marketing';
 
-import { MainNav } from '@/components/navigation/navigation';
+import { MainNav } from '@/components/navigation';
 import FooterPrimary from '@/components/footer/footer-blog';
 import Header from '@/components/header';
 import React, { createContext } from 'react';

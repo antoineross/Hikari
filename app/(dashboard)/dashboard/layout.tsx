@@ -13,15 +13,7 @@ import {
   getSubscription
 } from '@/utils/supabase/queries';
 import { redirect } from 'next/navigation';
-import {
-  LineChart,
-  Package,
-  Package2,
-  Settings,
-  ShoppingCart,
-  User,
-  Inbox
-} from 'lucide-react';
+import { Settings, User } from 'lucide-react';
 import { Navbar } from '@/components/dashboard-navbar';
 import Sidebar from '@/components/dashboard-sidebar';
 import { Separator } from '@/components/ui/separator';

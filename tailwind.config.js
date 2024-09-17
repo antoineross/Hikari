@@ -124,6 +124,11 @@ module.exports = {
             transform: 'translate(-50%, -50%) scale(0.9)'
           }
         },
+        gradient: {
+          to: {
+            backgroundPosition: "var(--bg-size) 0",
+          },
+        },
         shimmer: {
           '0%, 90%, 100%': {
             'background-position': 'calc(-100% - var(--shimmer-width)) 0'
@@ -147,7 +152,8 @@ module.exports = {
         ripple: 'ripple 3400ms ease infinite',
         shimmer: 'shimmer 8s infinite',
         marquee: 'marquee var(--duration) linear infinite',
-        'marquee-vertical': 'marquee-vertical var(--duration) linear infinite'
+        'marquee-vertical': 'marquee-vertical var(--duration) linear infinite',
+        gradient: "gradient 8s linear infinite",
       }
     }
   },

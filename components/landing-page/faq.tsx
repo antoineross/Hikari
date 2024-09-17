@@ -27,7 +27,7 @@ export default function FAQSection() {
             >
               <span>{item.question}</span>
               <ArrowDownLeftIcon
-                className={`h-5 w-5 text-muted-foreground transition-transform duration-1000 ease-in-out ${activeItem === index ? 'rotate-180' : ''}`}
+                className={`h-5 w-5 text-muted-foreground transition-transform duration-300 ease-in-out ${activeItem === index ? 'rotate-45' : ''}`}
               />
               {/* 
               <CrossIcon

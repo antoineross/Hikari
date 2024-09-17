@@ -3,7 +3,7 @@
 import React from 'react';
 import FooterBlack from '@/components/footer/footer-black';
 import FooterBlog from '@/components/footer/footer-blog';
-import FooterPrimary from '@/components/footer/footer-primary';
+import FooterPrimary from '@/components/footer-primary';
 
 export const FooterBlackComponent = () => {
   return <FooterBlack />;

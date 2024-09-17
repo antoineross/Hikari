@@ -9,7 +9,7 @@
       "method": "post",
       "params": {
         "name": "Starter",
-        "description": "Kickstart your journey with some light-hearted fun.",
+        "description": "Kickstart your journey with essential templates and community access.",
         "metadata": {
           "index": "0"
         }
@@ -51,7 +51,7 @@
       "method": "post",
       "params": {
         "name": "Pro",
-        "description": "For those who need a steady stream of humor in their lives.",
+        "description": "For those who need advanced templates and enhanced community engagement.",
         "metadata": {
           "index": "1"
         }
@@ -93,7 +93,7 @@
       "method": "post",
       "params": {
         "name": "Enterprise",
-        "description": "For the serious humorist who needs all the laughs.",
+        "description": "For organizations that require comprehensive templates and dedicated support.",
         "metadata": {
           "index": "3"
         }

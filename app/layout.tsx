@@ -4,7 +4,6 @@ import { getURL } from '@/utils/helpers';
 import { siteConfig } from '@/config/site';
 import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/toaster';
-import { Analytics } from '@/components/analytics';
 import { TailwindIndicator } from '@/components/tailwind-indicator';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Inter as FontSans } from 'next/font/google';
@@ -90,7 +89,6 @@ export default async function RootLayout({ children }: PropsWithChildren) {
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <RootProvider>{children}</RootProvider>
-          <Analytics />
           <Toaster />
           {/* <TailwindIndicator /> */}
         </ThemeProvider>

@@ -4,7 +4,6 @@ import {
   getSubscription,
   getUser
 } from '@/utils/supabase/queries';
-import PricingDefault from './pricing-default';
 import PricingRounded from './pricing-rounded';
 
 export default async function PricingPage() {
@@ -21,11 +20,5 @@ export default async function PricingPage() {
       products={products ?? []}
       subscription={subscription}
     />
-
-    // <PricingDefault
-    //   user={user}
-    //   products={products ?? []}
-    //   subscription={subscription}
-    // />
   );
 }

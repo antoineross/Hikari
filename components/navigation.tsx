@@ -2,14 +2,13 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { useSelectedLayoutSegment } from 'next/navigation';
 import { MainNavItem } from 'types';
 import { cn } from '@/lib/utils';
 import { MobileNav } from '@/components/mobile-nav';
 import { Icons } from '@/components/icons';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
 import { ModeToggle } from '@/components/mode-toggle';
-import { siteConfig } from '@/config/site';
+import { SunIcon } from '@heroicons/react/24/solid'
 
 interface CircularNavProps {
   items?: MainNavItem[];
@@ -22,16 +21,15 @@ export default function CircularNavigation({
   children,
   user
 }: CircularNavProps) {
-  const segment = useSelectedLayoutSegment();
   const [showMobileMenu, setShowMobileMenu] = React.useState<boolean>(false);
 
   return (
     <nav className="flex flex-wrap items-center justify-between w-full md:w-fit p-2 md:p-1 gap-4 md:gap-20 md:bg-zinc-50 md:dark:bg-zinc-900 md:rounded-full md:px-8 md:border-2 md:border-muted/30 md:dark:border-muted/80 md:shadow-md mx-auto mt-4 backdrop-blur-sm md:backdrop-blur-none">
       <div className="flex items-center space-x-2">
         <div className="bg-slate-50 dark:bg-slate-900 p-1 rounded-full">
-          <Icons.Eclipse />
+          <SunIcon className="size-8 transition-transform duration-300 ease-in-out hover:scale-110" />
         </div>
-        <span className="text-lg md:text-xl font-bold">{siteConfig.name}</span>
+        <span className="text-lg md:text-xl font-extrabold tracking-tightest">HIKARI</span>
       </div>
       {items?.length ? (
         <div className="hidden md:flex space-x-6">
@@ -41,9 +39,6 @@ export default function CircularNavigation({
               href={item.disabled ? '#' : item.href}
               className={cn(
                 'text-primary transition-colors hover:text-foreground/80',
-                item.href.startsWith(`/${segment}`)
-                  ? 'text-foreground'
-                  : 'text-foreground/60',
                 item.disabled && 'cursor-not-allowed opacity-80'
               )}
             >
