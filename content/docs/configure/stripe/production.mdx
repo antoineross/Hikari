@@ -66,8 +66,10 @@ For example, you can create business models with different pricing tiers, e.g.:
 
 <div className="border-2 rounded-lg mx-8 px-10">
   | Product | Monthly Price | Yearly Price |
-  |-------------|----------------|--------------| | Hobby | 10 USD | 100 USD | |
-  Freelancer | 20 USD | 200 USD | | Pro | 40 USD | 400 USD |
+  |-------------|----------------|--------------| 
+  | Hobby | 10 USD | 100 USD |
+  | Freelancer | 20 USD | 200 USD |
+  | Pro | 40 USD | 400 USD |
 </div>
 
 Optionally, to speed up the setup, we have added a <strong>fixtures file</strong> `utils/stripe/fixtures/stripe-fixtures.json` to bootstrap test product and pricing data in your Stripe account. Edit this file according to your products pricing scheme. The [Stripe CLI](https://stripe.com/docs/stripe-cli#install) `fixtures` command executes a series of API requests defined in this JSON file. Simply run `pnpm stripe:fixtures`.

@@ -55,7 +55,7 @@ export default function CircularNavigation({
           href={user ? '/dashboard' : '/signin'}
           className={cn(
             buttonVariants({ variant: 'outline', size: 'sm' }),
-            'rounded-2xl p-2 md:p-5 text-xs md:text-sm hidden md:inline-flex'
+            'rounded-full p-2 md:p-5 text-xs md:text-sm hidden md:inline-flex'
           )}
         >
           {user ? 'Dashboard' : 'Login'}
