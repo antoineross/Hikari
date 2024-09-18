@@ -1,0 +1,36 @@
+---
+title: Setting up Policies 
+description: Implementing supabase storage in your project
+---
+
+import Image from "next/image";
+
+Only continue with this section if you have already set up supabase locally in your project. If you have 
+not yet set up supabase locally, please refer to the [previous section](/docs/configure/supabase/local) for instructions.
+
+In order to set up supabase storage in your project, you need to follow these steps:
+
+1. First, go to your local instance of Supabase client and create a new bucket. If you followed the steps in the [previous section](/docs/configure/supabase/local), 
+the url should be `http://127.0.0.1:54323/project/default/storage/`.
+<Image src="/images/supabase-storage-1.png" alt="Supabase Storage" width={600} height={400} />
+
+2. Configure the bucket with the name "images" and the following settings, then click on the "Save" button:
+
+<Image src="/images/supabase-storage-2.png" alt="Supabase Storage" width={600} height={400} />
+
+3. Click on "Policies" tab in the same page and create a new policy for the bucket "images". Now we will need to add two policies here. 
+We are adding Row Level Security (RLS) policies to our Supabase storage to control who can insert, select, update, and delete assets within our bucket.
+
+<Image src="/images/supabase-storage-3.png" alt="Supabase Storage" width={600} height={400} />
+
+4. Click "Get started quickly" and choose the following options:
+- "Allow access to JPG images in a public folder to anonymous users". Click `Select` for the allowed operation, and choose `anon` for the target roles. Click "Review" and then "Save policy".
+
+<Image src="/images/policy-anonymous-1.png" alt="Policy for Anonymous Users" width={600} height={400} />
+
+- "Give users access to a folder only to authenticated users". Click all options under the allowed operations and choose `authenticated` for the target roles. Click "Review" and then "Save policy".
+
+<Image src="/images/policy-authenticated-1.png" alt="Policy for Authenticated Users" width={600} height={400} />
+
+Once you've saved the policies, "Authenticated" users should be able to upload/edit/delete files in the `images` folder. 
+

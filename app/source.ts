@@ -12,7 +12,7 @@ export const { getPage, getPages, pageTree } = loader({
   source: createMDXSource(map),
   icon(icon) {
     if (!icon) {
-      return; // You may set a default icon
+      return;
     }
     if (icon in icons) {
       return createElement(

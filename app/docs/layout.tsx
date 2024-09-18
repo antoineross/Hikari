@@ -4,6 +4,7 @@ import { docsOptions } from '@/app/layout.config';
 // import 'fumadocs-ui/style.css';
 import { RootToggle } from 'fumadocs-ui/components/layout/root-toggle';
 import { Icons } from '@/components/icons';
+import { SunIcon } from '@heroicons/react/24/solid';
 import 'fumadocs-ui/twoslash.css';
 
 export default function Layout({ children }: { children: ReactNode }) {
@@ -12,7 +13,8 @@ export default function Layout({ children }: { children: ReactNode }) {
       nav={{
         title: (
           <>
-            <Icons.Eclipse /> <strong>Hikari</strong>
+            <SunIcon className="size-8 transition-transform duration-300 ease-in-out hover:scale-110" />
+            <strong>Hikari</strong>
           </>
         ),
         url: '/'

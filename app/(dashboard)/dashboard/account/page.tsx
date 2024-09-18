@@ -73,6 +73,7 @@ export default async function AccountPage() {
               </div>
               <Button type="submit">Update Email</Button>
             </form>
+            {/* Pass userDetails to ImageUpload */}
             <ImageUpload user={userDetails} />
           </CardContent>
         </Card>

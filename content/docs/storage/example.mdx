@@ -1,3 +1,27 @@
+---
+title: Example: Updating your user avatar
+description: Updating your user avatar using supabase storage
+---
+
+import Image from "next/image";
+
+## Updating your user avatar
+
+Go to `http://localhost:3000/dashboard/account` and you will see a `Avatar Image` form under the `Personal Information` section.
+
+<Image src="/images/supabase-storage-4.png" alt="Supabase Storage" width={600} height={400} />
+
+Now that you have set up your supabase storage, you should be able to upload an image to your supabase storage, and replace your avatar image with your new uploaded image.
+
+<Image src="/images/supabase-storage-5.png" alt="Supabase Storage" width={600} height={400} />
+
+## But wait, how does this work?
+
+### Image Upload Component
+
+The `ImageUpload` component allows users to select and upload a new avatar image. Here's a breakdown of the key parts of the code:
+
+```typescript title="app/(dashboard)/dashboard/account/image-upload.tsx"
 'use client'
 import { ChangeEvent, useRef, useState, useTransition } from "react";
 import { toast } from "@/components/ui/use-toast";
@@ -12,7 +36,7 @@ export function ImageUpload({ user }: { user: any }) {
   const [imageUrl, setImageUrl] = useState("");
   const imageInputRef = useRef<HTMLInputElement>(null);
   const [isPending, startTransition] = useTransition();
-  const router = useRouter(); // Add this line
+  const router = useRouter();
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -30,6 +54,7 @@ export function ImageUpload({ user }: { user: any }) {
       });
       return;
     }
+
     if (!imageUrl.length) {
       toast({
         title: "Please select an image to upload",
@@ -37,6 +62,7 @@ export function ImageUpload({ user }: { user: any }) {
       });
       return;
     }
+
     startTransition(async () => {
       const imageFile = await convertBlobUrlToFile(imageUrl);
       const { imageUrl: uploadedImageUrl, error } = await uploadImage({
@@ -44,6 +70,7 @@ export function ImageUpload({ user }: { user: any }) {
         bucket: "avatar",
         folder: user.id,
       });
+
       if (error) {
         toast({
           title: error,
@@ -51,19 +78,21 @@ export function ImageUpload({ user }: { user: any }) {
         });
         return;
       }
-      if (uploadedImageUrl) { // Check if the upload was successful
-        setAvatarUrl(uploadedImageUrl); // Update local state
-        await fetch('/api/update-avatar', { // Call the new API
+
+      if (uploadedImageUrl) {
+        setAvatarUrl(uploadedImageUrl);
+        await fetch('/api/update-avatar', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ userId: user.id, avatarUrl: uploadedImageUrl }),
         });
+
         toast({
           title: "Successfully uploaded image",
           variant: "default",
         });
         setImageUrl("");
-        router.refresh(); // Refresh the page to reflect changes
+        router.refresh();
       }
     });
   };
@@ -72,11 +101,11 @@ export function ImageUpload({ user }: { user: any }) {
     <div className="flex flex-col gap-4 justify-center items-left py-6">
       <span className="text-sm font-medium">Avatar Image</span>
       <div className="ml-1 w-24 h-24 rounded-lg overflow-hidden border-2 border-primary p-0.5">
-        <Image 
-          src={imageUrl || avatarUrl || '/default-avatar.png'} 
-          width={96} 
-          height={96} 
-          alt="User Avatar" 
+        <Image
+          src={imageUrl || avatarUrl || '/default-avatar.png'}
+          width={96}
+          height={96}
+          alt="User Avatar"
           className="object-cover rounded-lg"
         />
       </div>
@@ -96,7 +125,6 @@ export function ImageUpload({ user }: { user: any }) {
         >
           Select New Image
         </Button>
-
         {imageUrl && (
           <Button
             onClick={handleClickUploadImagesButton}
@@ -116,3 +144,31 @@ export function ImageUpload({ user }: { user: any }) {
     </div>
   );
 }
+```
+
+### API Route for Updating Avatar
+
+To update the user's avatar in the database, we use an API route:
+
+```typescript title="app/api/update-avatar/route.ts"
+import { NextResponse } from 'next/server';
+import { createClient } from '@/utils/supabase/server';
+
+export async function POST(request: Request) {
+  const supabase = createClient();
+  const { userId, avatarUrl }: { userId: string; avatarUrl: string } = await request.json();
+
+  const { data, error } = await supabase
+    .from('users')
+    .update({ avatar_url: avatarUrl })
+    .eq('id', userId);
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 400 });
+  }
+
+  return NextResponse.json({ data });
+}
+```
+
+This setup allows users to upload a new avatar image, which is then stored in Supabase Storage and the URL is updated in the user's profile in the database.
