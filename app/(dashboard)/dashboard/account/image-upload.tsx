@@ -1,4 +1,5 @@
 'use client'
+
 import { ChangeEvent, useRef, useState, useTransition } from "react";
 import { toast } from "@/components/ui/use-toast";
 import Image from "next/image";
@@ -12,7 +13,7 @@ export function ImageUpload({ user }: { user: any }) {
   const [imageUrl, setImageUrl] = useState("");
   const imageInputRef = useRef<HTMLInputElement>(null);
   const [isPending, startTransition] = useTransition();
-  const router = useRouter(); // Add this line
+  const router = useRouter();
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -51,9 +52,9 @@ export function ImageUpload({ user }: { user: any }) {
         });
         return;
       }
-      if (uploadedImageUrl) { // Check if the upload was successful
-        setAvatarUrl(uploadedImageUrl); // Update local state
-        await fetch('/api/update-avatar', { // Call the new API
+      if (uploadedImageUrl) {
+        setAvatarUrl(uploadedImageUrl);
+        await fetch('/api/update-avatar', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ userId: user.id, avatarUrl: uploadedImageUrl }),
@@ -63,7 +64,7 @@ export function ImageUpload({ user }: { user: any }) {
           variant: "default",
         });
         setImageUrl("");
-        router.refresh(); // Refresh the page to reflect changes
+        router.refresh();
       }
     });
   };
