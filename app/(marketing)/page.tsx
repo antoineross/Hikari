@@ -1,4 +1,4 @@
-import Testimonials from '@/components/testimonials/testimonials-default';
+import Testimonials from '@/components/landing-page/testimonials-default';
 import FAQSection from '@/components/landing-page/faq';
 import Hero from '@/components/landing-page/hero';
 import LogoCloud from '@/components/landing-page/logo-cloud-svg';
