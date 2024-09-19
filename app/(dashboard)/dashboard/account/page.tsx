@@ -32,10 +32,10 @@ export default async function AccountPage() {
   const subscription = user ? await getSubscription(supabase, user.id) : null;
 
   if (!user) {
-    return redirect('/signin');
+    return redirect('/signin'); // Keep this for user redirection
   }
 
-  const isSubscribed = subscription && subscription.status === 'active';
+  const isSubscribed = subscription?.status === 'active';
 
   return (
     <div className="flex min-h-screen flex-col bg-muted/40 gap-4">
@@ -89,29 +89,32 @@ export default async function AccountPage() {
               <div className="flex flex-col gap-2">
                 <Label htmlFor="plan">Plan</Label>
                 <div className="text-muted-foreground">
-                  {subscription.prices.products.name}
+                  {subscription?.prices?.products?.name || 'N/A'}
                 </div>
               </div>
               <div className="flex flex-col gap-2">
                 <Label htmlFor="renewal">Next Renewal</Label>
                 <div className="text-muted-foreground">
-                  {new Date(subscription.current_period_end).toLocaleDateString(
-                    'en-US',
-                    { month: 'long', day: 'numeric', year: 'numeric' }
-                  )}
+                  {subscription?.current_period_end
+                    ? new Date(subscription.current_period_end).toLocaleDateString(
+                        'en-US',
+                        { month: 'long', day: 'numeric', year: 'numeric' }
+                      )
+                    : 'N/A'}
                 </div>
               </div>
               <div className="flex flex-col gap-2">
                 <Label htmlFor="amount">Amount</Label>
                 <div className="text-muted-foreground">
-                  ${(subscription.prices.unit_amount / 100).toFixed(2)} /{' '}
-                  {subscription.prices.interval}
+                  {subscription?.prices?.unit_amount
+                    ? `$${(subscription.prices.unit_amount / 100).toFixed(2)} / ${subscription.prices.interval}`
+                    : 'N/A'}
                 </div>
               </div>
               <div className="flex flex-col gap-2">
                 <Label htmlFor="status">Status</Label>
                 <div className="text-muted-foreground capitalize">
-                  {subscription.status}
+                  {subscription?.status || 'N/A'}
                 </div>
               </div>
             </CardContent>
@@ -122,20 +125,19 @@ export default async function AccountPage() {
         ) : (
           <Card className="flex flex-col gap-4">
             <CardHeader>
-              <CardTitle>Upgrade Your Plan</CardTitle>
+              <CardTitle>No Active Subscription</CardTitle>
               <CardDescription>
-                You're currently not subscribed to any plan. Upgrade now to
-                unlock more features.
+                You currently do not have an active subscription. Please consider upgrading to access more features.
               </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="text-lg font-medium">Starter Plan</h4>
-                  <p className="text-muted-foreground">$9/month</p>
+                  <h4 className="text-lg font-medium">Explore Plans</h4>
+                  <p className="text-muted-foreground">Check out our pricing options.</p>
                 </div>
                 <Link href="/pricing">
-                  <Button>Upgrade</Button>
+                  <Button>View Pricing</Button>
                 </Link>
               </div>
             </CardContent>
