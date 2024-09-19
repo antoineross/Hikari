@@ -80,7 +80,9 @@ export const dummyPricing: ProductWithPrices[] = [
         trial_period_days: null,
         type: 'recurring',
         active: true,
-        product_id: 'dummy-basic'
+        product_id: 'dummy-basic',
+        description: null,
+        metadata: null
       },
       {
         id: 'dummy-basic-price-year',
@@ -91,7 +93,9 @@ export const dummyPricing: ProductWithPrices[] = [
         trial_period_days: null,
         type: 'recurring',
         active: true,
-        product_id: 'dummy-basic'
+        product_id: 'dummy-basic',
+        description: null,
+        metadata: null
       }
     ],
     image: null,
@@ -112,7 +116,9 @@ export const dummyPricing: ProductWithPrices[] = [
         trial_period_days: null,
         type: 'recurring',
         active: true,
-        product_id: 'dummy-pro'
+        product_id: 'dummy-pro',
+        description: null,
+        metadata: null
       },
       {
         id: 'dummy-pro-price-year',
@@ -123,7 +129,9 @@ export const dummyPricing: ProductWithPrices[] = [
         trial_period_days: null,
         type: 'recurring',
         active: true,
-        product_id: 'dummy-pro'
+        product_id: 'dummy-pro',
+        description: null,
+        metadata: null
       }
     ],
     image: null,
@@ -144,7 +152,9 @@ export const dummyPricing: ProductWithPrices[] = [
         trial_period_days: null,
         type: 'recurring',
         active: true,
-        product_id: 'dummy-enterprise'
+        product_id: 'dummy-enterprise',
+        description: null,
+        metadata: null
       },
       {
         id: 'dummy-enterprise-price-year',
@@ -155,7 +165,9 @@ export const dummyPricing: ProductWithPrices[] = [
         trial_period_days: null,
         type: 'recurring',
         active: true,
-        product_id: 'dummy-enterprise'
+        product_id: 'dummy-enterprise',
+        description: null,
+        metadata: null
       }
     ],
     image: null,
