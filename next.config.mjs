@@ -16,6 +16,11 @@ const config = {
         protocol: 'http', 
         hostname: '127.0.0.1', 
         port: '64321'
+      },
+      {
+        protocol: 'https',
+        hostname: 'llmgwifgtszjgjlzlwjq.supabase.co',
+        port: ''
       }
     ]
   }
