@@ -5,7 +5,8 @@ import {
   Settings,
   ShoppingCart,
   Users2,
-  Inbox
+  Inbox,
+  FileText
 } from 'lucide-react';
 
 export interface NavItem {
@@ -18,6 +19,7 @@ export interface NavItem {
 export const iconComponents = {
   Inbox,
   ShoppingCart,
+  FileText,
   Package,
   Users2,
   LineChart
@@ -25,7 +27,7 @@ export const iconComponents = {
 
 export const navConfig = [
   { href: '/dashboard', icon: 'Inbox', label: 'Dashboard' },
-  { href: '/dashboard/orders', icon: 'ShoppingCart', label: 'Orders' },
+  // { href: '/dashboard/posts', icon: 'FileText', label: 'Posts' },
   {
     href: '/dashboard/customer',
     icon: 'Users2',

@@ -57,7 +57,7 @@ const pricingPlans: Plan[] = [
 
 export default pricingPlans;
 
-import { Tables } from '@/types_db';
+import { Tables } from '@/types/db';
 
 type Product = Tables<'products'>;
 type Price = Tables<'prices'>;

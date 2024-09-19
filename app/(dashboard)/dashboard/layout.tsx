@@ -10,12 +10,11 @@ import { createClient } from '@/utils/supabase/server';
 import {
   getUser,
   getUserDetails,
-  getSubscription
 } from '@/utils/supabase/queries';
-import { redirect } from 'next/navigation';
 import { Settings, User } from 'lucide-react';
 import { Navbar } from '@/components/dashboard-navbar';
 import Sidebar from '@/components/dashboard-sidebar';
+import { redirect } from 'next/navigation';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -25,10 +24,9 @@ export default async function DashboardLayout({
   children
 }: DashboardLayoutProps) {
   const supabase = createClient();
-  const [user, userDetails, subscription] = await Promise.all([
+  const [user, userDetails] = await Promise.all([
     getUser(supabase),
     getUserDetails(supabase),
-    getSubscription(supabase)
   ]);
 
   if (!user) {

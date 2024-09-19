@@ -10,6 +10,7 @@ import { Inter as FontSans } from 'next/font/google';
 import localFont from 'next/font/local';
 import type { Viewport } from 'next';
 import { RootProvider } from 'fumadocs-ui/provider';
+import { TRPCReactProvider } from '@/trpc/react';
 
 export const viewport: Viewport = {
   themeColor: [
@@ -88,7 +89,9 @@ export default async function RootLayout({ children }: PropsWithChildren) {
         )}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <RootProvider>{children}</RootProvider>
+          <RootProvider>
+            <TRPCReactProvider>{children}</TRPCReactProvider>
+          </RootProvider>
           <Toaster />
           {/* <TailwindIndicator /> */}
         </ThemeProvider>

@@ -8,6 +8,9 @@
     "...configure",
     "---Storage---",
     "storage/setting-up",
-    "storage/example"
+    "storage/example",
+    "---tRPC---",
+    "trpc/setup",
+    "trpc/example"
   ]
 }

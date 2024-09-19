@@ -1,0 +1,103 @@
+---
+title: Setting up tRPC 
+description: Implementing tRPC in your Supabase Project
+---
+
+import Image from "next/image";
+
+## Installation
+
+In order to set up tRPC in your project, you need to add the following dependencies to your project:
+
+```bash
+pnpm install @trpc/server @trpc/client @trpc/next @trpc/react-query @tanstack/react-query
+```
+
+## Setting up tRPC in your project
+
+There are two folders of note when it comes to tRPC in your project. These are:
+
+<div className="steps">
+  <div className="step">
+    **server/**: This folder contains the tRPC API routes. You will primarily work here to define your API procedures and handle requests.
+  </div>
+  <div className="step">
+    **trpc/**:  This folder is for tRPC configuration, including the setup of routers and context. Changes here are less frequent unless you're adding new procedures or modifying the configuration.
+  </div>
+  <div className="step">
+    **app/layout.tsx**: In order to use tRPC in your project, you will need to add the TRPCReactProvider to your project. This is done in the `app/layout.tsx` file.
+
+    ```tsx title="app/layout.tsx"
+      import { TRPCReactProvider } from "@/trpc/react";
+
+      export default function RootLayout({
+        children,
+      }: {
+        children: React.ReactNode;
+      }) {
+        return (
+            <html lang="en">
+              <body>
+                <TRPCReactProvider>
+                  {children}
+                </TRPCReactProvider>
+              </body>
+            </html>
+        );
+      }
+    ```
+  </div>
+  <div className="step">
+    **app/api/trpc/[trpc]route.ts**: This file is the entry point for tRPC. It is used to create the tRPC router and handle requests.
+    
+    ```tsx title="app/api/trpc/[trpc]route.ts"
+      import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
+      import { type NextRequest } from "next/server";
+
+      import { env } from "@/env";
+      import { appRouter } from "@/server/api/root";
+      import { createTRPCContext } from "@/server/api/trpc";
+
+      /**
+       * This wraps the `createTRPCContext` helper and provides the required context for the tRPC API when
+       * handling a HTTP request (e.g. when you make requests from Client Components).
+       */
+      const createContext = async (req: NextRequest) => {
+        return createTRPCContext({
+          headers: req.headers,
+        });
+      };
+
+      const handler = (req: NextRequest) =>
+        fetchRequestHandler({
+          endpoint: "/api/trpc",
+          req,
+          router: appRouter,
+          createContext: () => createContext(req),
+          onError:
+            env.NODE_ENV === "development"
+              ? ({ path, error }) => {
+                  console.error(
+                    `❌ tRPC failed on ${path ?? "<no-path>"}: ${error.message}`
+                  );
+                }
+              : undefined,
+        });
+
+export { handler as GET, handler as POST };
+
+    ```
+
+      This file uses a local **env.js** file to store your environment variables. So make sure to add that in your project. [Here](https://github.com/antoineross/hikari/blob/main/env.js) is an example of what the env file should look like. 
+
+  </div>
+
+</div>
+
+
+
+## Creating a tRPC Router
+tRPC shines by enabling you to create a router that links your frontend and backend effortlessly. When you change props or types between the two, those updates are automatically reflected in the router. This feature *accelerates* your development cycles.
+
+This router is essential for managing all your API requests. You can find the `router.ts` file in the `trpc/` folder. This is where you'll define your API procedures.
+

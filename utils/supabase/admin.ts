@@ -2,7 +2,7 @@ import { toDateTime } from '@/utils/helpers';
 import { stripe } from '@/utils/stripe/config';
 import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
-import type { Database, Tables, TablesInsert } from 'types_db';
+import type { Database, Tables, TablesInsert } from '@/types/db';
 
 type Product = Tables<'products'>;
 type Price = Tables<'prices'>;
@@ -10,11 +10,9 @@ type Price = Tables<'prices'>;
 // Change to control trial period length
 const TRIAL_PERIOD_DAYS = 0;
 
-// Note: supabaseAdmin uses the SERVICE_ROLE_KEY which you must only use in a secure server-side context
-// as it has admin privileges and overwrites RLS policies!
-const supabaseAdmin = createClient<Database>(
+const supabase = createClient<Database>(
   process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 );
 
 const upsertProductRecord = async (product: Stripe.Product) => {
@@ -28,7 +26,7 @@ const upsertProductRecord = async (product: Stripe.Product) => {
     metadata: product.metadata
   };
 
-  const { error: upsertError } = await supabaseAdmin
+  const { error: upsertError } = await supabase
     .from('products')
     .upsert([productData]);
   if (upsertError) {
@@ -56,7 +54,7 @@ const upsertPriceRecord = async (
     trial_period_days: price.recurring?.trial_period_days ?? TRIAL_PERIOD_DAYS
   };
 
-  const { error: upsertError } = await supabaseAdmin
+  const { error: upsertError } = await supabase
     .from('prices')
     .upsert([priceData]);
 
@@ -83,7 +81,7 @@ const upsertPriceRecord = async (
 
 const deleteProductRecord = async (product: Stripe.Product) => {
   console.log('Deleting product:', product.id);
-  const { error: deletionError } = await supabaseAdmin
+  const { error: deletionError } = await supabase
     .from('products')
     .delete()
     .eq('id', product.id);
@@ -96,7 +94,7 @@ const deleteProductRecord = async (product: Stripe.Product) => {
 
 const deletePriceRecord = async (price: Stripe.Price) => {
   console.log('Deleting price:', price.id);
-  const { error: deletionError } = await supabaseAdmin
+  const { error: deletionError } = await supabase
     .from('prices')
     .delete()
     .eq('id', price.id);
@@ -109,7 +107,7 @@ const deletePriceRecord = async (price: Stripe.Price) => {
 
 const upsertCustomerToSupabase = async (uuid: string, customerId: string) => {
   console.log('Upserting customer to Supabase:', uuid);
-  const { error: upsertError } = await supabaseAdmin
+  const { error: upsertError } = await supabase
     .from('customers')
     .upsert([{ id: uuid, stripe_customer_id: customerId }]);
 
@@ -148,7 +146,7 @@ const createOrRetrieveCustomer = async ({
 
   // Check if the customer already exists in Supabase
   const { data: existingSupabaseCustomer, error: queryError } =
-    await supabaseAdmin
+    await supabase
       .from('customers')
       .select('*')
       .eq('id', uuid)
@@ -189,7 +187,7 @@ const createOrRetrieveCustomer = async ({
       console.warn(
         'Supabase customer record mismatched Stripe ID. Updating Supabase record.'
       );
-      const { error: updateError } = await supabaseAdmin
+      const { error: updateError } = await supabase
         .from('customers')
         .update({ stripe_customer_id: stripeCustomerId })
         .eq('id', uuid);
@@ -236,7 +234,7 @@ const copyBillingDetailsToCustomer = async (
   if (!name || !phone || !address) return;
   //@ts-ignore
   await stripe.customers.update(customer, { name, phone, address });
-  const { error: updateError } = await supabaseAdmin
+  const { error: updateError } = await supabase
     .from('users')
     .update({
       billing_address: { ...address },
@@ -256,7 +254,7 @@ const manageSubscriptionStatusChange = async (
 ) => {
   console.log('Managing subscription status change:', subscriptionId);
   // Get customer's UUID from mapping table.
-  const { data: customerData, error: noCustomerError } = await supabaseAdmin
+  const { data: customerData, error: noCustomerError } = await supabase
     .from('customers')
     .select('id')
     .eq('stripe_customer_id', customerId)
@@ -307,7 +305,7 @@ const manageSubscriptionStatusChange = async (
       : null
   };
 
-  const { error: upsertError } = await supabaseAdmin
+  const { error: upsertError } = await supabase
     .from('subscriptions')
     .upsert([subscriptionData]);
   if (upsertError) {

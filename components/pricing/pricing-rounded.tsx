@@ -8,7 +8,7 @@ import {
   CardTitle,
   CardContent
 } from '@/components/ui/card-header';
-import type { Tables } from '@/types_db';
+import type { Tables } from '@/types/db';
 import { getStripe } from '@/utils/stripe/client';
 import { checkoutWithStripe } from '@/utils/stripe/server';
 import { getErrorRedirect } from '@/utils/helpers';

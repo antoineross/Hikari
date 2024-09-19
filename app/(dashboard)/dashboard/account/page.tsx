@@ -12,29 +12,29 @@ import {
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { createClient } from '@/utils/supabase/client';
+import { createClient } from '@/utils/supabase/server';
 import {
   getUser,
   getUserDetails,
   getSubscription
 } from '@/utils/supabase/queries';
-import { redirect } from 'next/navigation';
 import { updateName, updateEmail } from '@/utils/auth-helpers/server';
 import { ImageUpload } from './image-upload'; 
+import { redirect } from 'next/navigation';
 
 export default async function AccountPage() {
   const supabase = createClient();
-  const [user, userDetails, subscription] = await Promise.all([
+  const [user, userDetails] = await Promise.all([
     getUser(supabase),
     getUserDetails(supabase),
-    getSubscription(supabase)
   ]);
 
-  console.log("User Details", userDetails)
+  const subscription = user ? await getSubscription(supabase, user.id) : null;
 
   if (!user) {
     return redirect('/signin');
   }
+
   const isSubscribed = subscription && subscription.status === 'active';
 
   return (
