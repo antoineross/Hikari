@@ -1,5 +1,4 @@
 import { createClient } from "@/utils/supabase/client";
-import { v4 as uuidv4 } from "uuid";
 import imageCompression from "browser-image-compression";
 
 function getStorage() {
@@ -16,7 +15,7 @@ type UploadProps = {
 export const uploadImage = async ({ file, bucket, folder }: UploadProps) => {
   const fileName = file.name;
   const fileExtension = fileName.slice(fileName.lastIndexOf(".") + 1);
-  const path = `${folder ? folder + "/" : ""}${uuidv4()}.${fileExtension}`;
+  const path = `${folder ? folder + "/" : ""}avatar_url.${fileExtension}`;
 
   console.log(`Preparing to upload image: ${fileName} to bucket: ${bucket} in folder: ${folder}`);
 
@@ -32,7 +31,7 @@ export const uploadImage = async ({ file, bucket, folder }: UploadProps) => {
 
   const storage = getStorage();
 
-  const { data, error } = await storage.from(bucket).upload(path, file);
+  const { data, error } = await storage.from(bucket).upload(path, file, { upsert: true });
 
   if (error) {
     console.error("Upload error:", error.message);

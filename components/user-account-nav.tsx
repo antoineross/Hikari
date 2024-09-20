@@ -23,6 +23,7 @@ interface UserAccountNavProps extends React.HTMLAttributes<HTMLDivElement> {
     avatar_url: string | null; 
     email: string | null; 
   };
+  key?: string;
 }
 
 export function UserAccountNav({ user }: UserAccountNavProps) {
@@ -44,11 +45,12 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
         className="overflow-hidden rounded-full"
       >
         <Image
-          src={user?.avatar_url || "/placeholder-user.jpg"}
+          src={`${user?.avatar_url || "/placeholder-user.jpg"}?t=${Date.now()}`}
           width={36}
           height={36}
           alt="Avatar"
           className="overflow-hidden rounded-full"
+          unoptimized
         />
       </Button>
     </DropdownMenuTrigger>

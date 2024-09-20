@@ -17,6 +17,8 @@ The all-in-one starter kit for building high-performance SaaS applications using
 - 🔍 **Zod Validation**: Schema validation to keep your data safe and sound
 - 🧪 **Testing Tools**: Integrated unit and e2e testing with Jest, React Testing Library, and Playwright
 - 🧑‍💻 **Developer Experience**: ESLint, Prettier, Husky, and Commitlint for maintaining code quality and consistency
+- 📀 **Supabase storage** - Included are setting up policies, and handling image compression in the browser.
+- ⼬ **tRPC** - Included a guide on how to add a very lean trpc router for your api. You just need to add 3 folders, and 1 file.
 - ⚙️ **Local Development**: Develop locally with Supabase, Docker, and a set of custom commands
 - 📚 **Documentation & Blog**: Utilize MDX compiler from the open-source project Fumadocs for documentation and blog content.
 
@@ -67,6 +69,6 @@ To contribute:
 ## ❤️ Support
 
 If you like the project, consider leaving a star. 🌟
-![Star History](./public/star-history.png)
+<iframe style="width:100%;height:auto;min-width:600px;min-height:400px;" src="https://star-history.com/embed?secret=Z2hwX29sMkx6WHlZb1hMMHQwclFadDI2NTlwNTdOdTRLNjRUa2JhMw==#antoineross/Hikari&Date" frameBorder="0"></iframe>
 
 Made by [Antoine Ross](https://antoineross.com).
