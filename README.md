@@ -69,6 +69,6 @@ To contribute:
 ## ❤️ Support
 
 If you like the project, consider leaving a star. 🌟
-<iframe style="width:100%;height:auto;min-width:600px;min-height:400px;" src="https://star-history.com/embed?secret=Z2hwX29sMkx6WHlZb1hMMHQwclFadDI2NTlwNTdOdTRLNjRUa2JhMw==#antoineross/Hikari&Date" frameBorder="0"></iframe>
+[![Star History Chart](https://api.star-history.com/svg?repos=antoineross/Hikari&type=Date)](https://star-history.com/#antoineross/Hikari&Date)
 
 Made by [Antoine Ross](https://antoineross.com).
