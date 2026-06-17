@@ -8,6 +8,10 @@ alter policy "Can only view own subs data." on public.subscriptions using ((sele
 alter policy "Can view own posts"           on public.posts         using ((select auth.uid()) = user_id);
 alter policy "Can update own posts"         on public.posts         using ((select auth.uid()) = user_id);
 alter policy "Can delete own posts"         on public.posts         using ((select auth.uid()) = user_id);
+-- The INSERT policy already subquery-wraps its row-count check; wrap the inner
+-- auth.uid() too for consistency (per review feedback).
+alter policy "Can insert own posts"         on public.posts
+  with check ((select count(*) from public.posts where user_id = (select auth.uid())) < 5);
 
 -- 2. Index the columns the RLS policies filter on (else each check seq-scans).
 create index if not exists posts_user_id_idx         on public.posts (user_id);
